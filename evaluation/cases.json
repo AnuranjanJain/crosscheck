@@ -1,0 +1,52 @@
+{
+  "version": "1",
+  "reviewed_on": "2026-09-09",
+  "purpose": "Acceptance evidence only; these labels must never be injected into extraction or comparison results.",
+  "documents": {
+    "annual": {"filename": "02-delhivery-annual-report-fy24-excerpt.pdf", "sha256": "de6d79adc0667d66f5415fa4fcec4b485a19073744adce44dfca3e34e529fa7a", "source_url": null, "provenance": "User-supplied starter-datasets.zip; original publisher URL not independently verified."},
+    "earnings": {"filename": "03-delhivery-q4-fy24-earnings-presentation.pdf", "sha256": "5ca307085c96c1fcbfd2d99a7ad40dcbd8958079b3833063520e4e84fdded2a8", "source_url": null, "provenance": "User-supplied starter-datasets.zip."},
+    "prospectus": {"filename": "01-delhivery-prospectus-2022-excerpt.pdf", "sha256": "0d7e71e1766ef33063e52a2140936fbe400c2950e58e93489d031be0b19d8ce7", "source_url": null, "provenance": "User-supplied starter-datasets.zip."},
+    "survey": {"filename": "01-india-economic-survey-2024-25-excerpt.pdf", "sha256": "86f2e79a3b7b4a3698907897297b9e17fe06d39c074d52e68303066d18a2cf71", "source_url": null, "provenance": "User-supplied starter-datasets.zip."},
+    "rbi": {"filename": "02-rbi-annual-report-2024-25-excerpt.pdf", "sha256": "73209a2caa2f5671f2feae065d01602302daaaac9e8230c9c471d99243fd079e", "source_url": null, "provenance": "User-supplied starter-datasets.zip."},
+    "imf": {"filename": "03-imf-india-2025-article-iv-excerpt.pdf", "sha256": "f6d3cfecafd9548920349b29b1137d645c20073434d0ac66485ead9738a0ea4d", "source_url": null, "provenance": "User-supplied starter-datasets.zip."},
+    "sec": {"filename": "sec-satyam-complaint-2011.pdf", "sha256": "d0b597b95398b32a2c57b71923dd0a313219b688793955fd5a00276e978581f5", "source_url": "https://www.sec.gov/files/litigation/complaints/2011/comp21915.pdf", "provenance": "SEC complaint filed April 5, 2011, case 1:11-cv-00672; retrieved and text/table inspected on 2026-09-09. Allegations must remain attributed to the SEC."}
+  },
+  "cases": [
+    {
+      "id": "delhivery-postal-corroboration", "dataset": "delhivery", "expected_label": "corroboration", "evidence_status": "reviewed", "pipeline_status": "not_verified",
+      "left": {"document": "annual", "pdf_page_index": 21, "printed_page_label": "42-43", "quote": "provides services in 18,793 postal", "context_quotes": ["index number (\u201cPIN\u201d) codes, as of March 31, 2024."], "value": "18793", "unit": "postal PIN codes", "period": "2024-03-31"},
+      "right": {"document": "earnings", "pdf_page_index": 7, "printed_page_label": "7", "quote": "Pin-code reach(1) 18,074 18,540 18,675 18,793", "context_quotes": ["As of end of / for the period", "Q4 FY22 Q4 FY23 Q3 FY24 Q4 FY24"], "value": "18793", "unit": "postal PIN codes", "period": "2024-03-31"},
+      "reasoning": "The last earnings-table column is Q4 FY24. It matches the annual report's March 31, 2024 coverage, with identical entity, count and unit. These are two publications by the same company, not independent verification."
+    },
+    {
+      "id": "india-gdp-corroboration", "dataset": "india-macroeconomy", "expected_label": "corroboration", "evidence_status": "reviewed", "pipeline_status": "not_verified",
+      "left": {"document": "rbi", "pdf_page_index": 7, "printed_page_label": "3", "quote": "growth moderated to 6.5 per cent in 2024-25,", "context_quotes": ["Although real gross domestic product (GDP)3", "All references to GDP data in this Report are based on the Second Advance Estimates (SAE) of National Income 2024-25"], "value": "6.5", "unit": "percent", "period": "2024-25"},
+      "right": {"document": "imf", "pdf_page_index": 4, "printed_page_label": null, "quote": "Real GDP (at market prices) 9.7 7.6 9.2 6.5 6.6 6.2", "context_quotes": ["2021/22 2022/23 2023/24 2024/25 2025/26 2026/27", "Growth (in percent)", "1/ Data are for April\u2013March fiscal years."], "value": "6.5", "unit": "percent", "period": "2024-25"},
+      "reasoning": "Both publications give 6.5 percent for Indian real GDP growth in the same April-March fiscal year. IMF's data notes include Indian-authority data, so agreement does not prove independent sourcing."
+    },
+    {
+      "id": "india-gdp-estimate-reconciliation", "dataset": "india-macroeconomy", "expected_label": "contextual_reconciliation", "evidence_status": "reviewed", "pipeline_status": "not_verified",
+      "left": {"document": "survey", "pdf_page_index": 3, "printed_page_label": "1", "quote": "India\u2019s real GDP is estimated to\ngrow by 6.4 per cent in FY25.", "context_quotes": ["first advance estimates of national accounts"], "value": "6.4", "unit": "percent", "period": "2024-25", "estimate_status": "first advance estimate"},
+      "right": {"document": "rbi", "pdf_page_index": 7, "printed_page_label": "3", "quote": "growth moderated to 6.5 per cent in 2024-25,", "context_quotes": ["All references to GDP data in this Report are based on the Second Advance Estimates (SAE) of National Income 2024-25", "National Statistical Office on February 28, 2025, unless indicated otherwise."], "value": "6.5", "unit": "percent", "period": "2024-25", "estimate_status": "second advance estimate"},
+      "reasoning": "The fiscal year and metric match, but the Survey explicitly uses first advance estimates and RBI explicitly uses the February 28 second advance estimates. The revision in estimate vintage explains the difference; neither should be labeled the definitive actual figure."
+    },
+    {
+      "id": "delhivery-sort-capacity-reconciliation", "dataset": "delhivery", "expected_label": "contextual_reconciliation", "evidence_status": "reviewed", "pipeline_status": "not_verified",
+      "left": {"document": "prospectus", "pdf_page_index": 42, "printed_page_label": null, "quote": "Rated Automated Sort Capacity of 3.70 million\nshipments per day as of December 31, 2021.", "value": "3.70", "unit": "million shipments per day", "period": "2021-12-31"},
+      "right": {"document": "annual", "pdf_page_index": 21, "printed_page_label": "42-43", "quote": "Sort Capacity of 7.1 million shipments per day as of March", "context_quotes": ["31, 2024. We have automated material handling systems"], "value": "7.1", "unit": "million shipments per day", "period": "2024-03-31"},
+      "reasoning": "The reported capacity is for different dates, December 2021 and March 2024. Capacity can change over time, so the difference is not contradictory."
+    },
+    {
+      "id": "satyam-bank-balance-contradiction", "dataset": "additional-public-pdf", "expected_label": "likely_contradiction", "evidence_status": "reviewed", "pipeline_status": "not_verified",
+      "left": {"document": "sec", "pdf_page_index": 10, "printed_page_label": "11", "quote": "3/3I/08 $10,972,784 $214,506,068 $203,533,283 $290,500,000", "context_quotes": ["BoB Balance", "PerSatyam"], "value": "214506068", "unit": "USD", "period": "2008-03-31", "attribution": "Balance reported by Satyam, as reproduced in SEC complaint"},
+      "right": {"document": "sec", "pdf_page_index": 10, "printed_page_label": "11", "quote": "3/3I/08 $10,972,784 $214,506,068 $203,533,283 $290,500,000", "context_quotes": ["Balance per BoB Balance BoB Balance Reported", "Statements (Fraudulent) Equivalent"], "value": "10972784", "unit": "USD", "period": "2008-03-31", "attribution": "Balance per Bank of Baroda statements, as reproduced in SEC complaint"},
+      "reasoning": "The SEC explicitly compares actual Bank of Baroda account balances with what Satyam reported for the same fiscal year-end. These are competing assertions about the same account and date, not standalone versus consolidated scope, differing units, or forecast revisions. The table identifies a USD 203,533,283 overstatement. This is an attributed likely contradiction inside one PDF; only the corroboration requirement expressly requires separate documents. Preserve the SEC attribution and do not imply the application independently audited bank statements. The text layer reads 3/3I/08 with a capital I; validate the rendered source before using the normalized date in the demo."
+    },
+    {
+      "id": "imf-unextractable-page", "dataset": "india-macroeconomy", "expected_label": "extraction_failure", "evidence_status": "reviewed", "pipeline_status": "not_verified",
+      "source": {"document": "imf", "pdf_page_index": 0, "printed_page_label": null},
+      "reasoning": "pdfplumber returns no text for the first source page. Mark it as unextractable, retain the page for inspection, record the issue, and continue processing readable pages. Do not call it image-only without inspecting the rendered page; full OCR is outside this version."
+    }
+  ],
+  "split_review": {"method": "Intersection of exact (document_filename, pdf_page_index, evidence_quote) triples in development and held_out label files.", "delhivery_overlapping_unique_passages": 7, "india_macroeconomy_overlapping_unique_passages": 14, "conclusion": "Existing held_out files are not independent held-out evaluation. Report them as reviewed regression samples; do not claim unseen generalization from these scores."}
+}
