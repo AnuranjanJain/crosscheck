@@ -6,7 +6,7 @@ from decimal import Decimal
 from itertools import combinations
 from uuid import uuid4
 
-from .identity import metric_terms, shares_metric_identity
+from .identity import fact_metric_key, metric_terms, shares_metric_identity
 from .models import Fact, Relationship, RelationshipKind
 
 UNIT_ALIASES = {
@@ -128,11 +128,12 @@ def _values_overlap_at_source_precision(left: Fact, right: Fact) -> bool:
     return max(left_lower, right_lower) < min(left_upper, right_upper)
 
 
-def _fact_priority(fact: Fact) -> tuple[int, int, int]:
+def _fact_priority(fact: Fact) -> tuple[int, int, int, int]:
     has_period = 0 if fact.period else 1
     has_unit = 0 if fact.unit else 1
     has_scope = 0 if fact.scope else 1
-    return (has_period, has_unit, has_scope)
+    table_context = 0 if fact.attributes.get("extractor") in {"period_table", "attributed_table"} else 1
+    return (table_context, has_period, has_unit, has_scope)
 
 
 def _relationship_rank(relationship: Relationship) -> tuple[int, float]:
@@ -174,6 +175,10 @@ def compare_facts(left: Fact, right: Fact) -> Relationship:
     same_unit = bool(left_unit and right_unit and left_unit == right_unit)
     different_unit = bool(left_unit and right_unit and left_unit != right_unit)
     incompatible_units = bool(left_family and right_family and left_family != right_family)
+    left_currency = left.attributes.get("currency")
+    right_currency = right.attributes.get("currency")
+    if left_currency and right_currency and left_currency != right_currency:
+        incompatible_units = True
 
     if left.value_number is not None and right.value_number is not None:
         difference = abs(Decimal(str(left.value_number)) - Decimal(str(right.value_number)))
@@ -250,13 +255,29 @@ def compare_facts(left: Fact, right: Fact) -> Relationship:
 
 def candidate_pairs(
     facts: list[Fact],
-    limit: int = 200,
+    limit: int = 1000,
     max_candidates: int = 80_000,
     include_fact_ids: set[str] | None = None,
 ) -> list[Relationship]:
     """Return bounded cross-document comparisons, optionally only for new facts."""
     ordered = sorted(range(len(facts)), key=lambda index: _fact_priority(facts[index]))
     relationships: list[Relationship] = []
+    attributed: dict[str, list[Fact]] = defaultdict(list)
+    for fact in facts:
+        group = fact.attributes.get("table_group")
+        if group:
+            attributed[group].append(fact)
+    for group in attributed.values():
+        for left, right in combinations(group, 2):
+            if include_fact_ids is not None and left.id not in include_fact_ids and right.id not in include_fact_ids:
+                continue
+            relationship = compare_facts(left, right)
+            relationship.explanation += (
+                f" Attributed table assertions: {left.attributes['attribution']} versus "
+                f"{right.attributes['attribution']}. These are statements reproduced in the source; "
+                "the system has not independently audited them."
+            )
+            relationships.append(relationship)
     buckets: dict[tuple[str, str], list[int]] = defaultdict(list)
     seen: set[tuple[str, str]] = set()
     examined = 0
@@ -264,7 +285,10 @@ def candidate_pairs(
     for index in ordered:
         right = facts[index]
         terms = list(dict.fromkeys(metric_terms(f"{right.subject} {right.predicate}")))[:12]
-        for token_pair in combinations(sorted(terms), 2):
+        keys = list(combinations(sorted(terms), 2))
+        if fact_metric_key(right):
+            keys.insert(0, ("exact", fact_metric_key(right)))
+        for token_pair in keys:
             for left_index in buckets[token_pair]:
                 left = facts[left_index]
                 if left.document_id == right.document_id:

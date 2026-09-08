@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from .identity import metric_key
 from .models import Evidence, Fact
+from .tables import attributed_table_facts, period_table_facts
 
 NUMBER = re.compile(r"(?<![A-Za-z0-9])(?P<currency>[₹$€£])?\s*(?P<number>\(?-?\d[\d,]*(?:\.\d+)?\)?)\s*(?P<unit>million|mn|billion|bn|crore|cr|lakh|percent|per cent|%|tonnes?|million tonnes?)?", re.I)
 UNIT_CONTEXT = re.compile(r"\b(million|mn|billion|bn|crore|cr|lakh|percent|per cent|tonnes?|million tonnes)\b|%", re.I)
@@ -76,7 +77,7 @@ def _semantic_fact(evidence: Evidence, sentence: str) -> Fact | None:
 
 
 def extract_facts(evidence: Evidence) -> list[Fact]:
-    facts: list[Fact] = []
+    facts: list[Fact] = attributed_table_facts(evidence) + period_table_facts(evidence)
     for sentence in re.split(r"(?<=[.!?])\s+|\n+", evidence.text):
         sentence = " ".join(sentence.split()).strip(" -")
         if len(sentence) < 12:

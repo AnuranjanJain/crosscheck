@@ -13,6 +13,18 @@
   },
   "cases": [
     {
+      "id": "delhivery-ebitda-corroboration", "dataset": "delhivery", "expected_label": "corroboration", "evidence_status": "reviewed", "pipeline_status": "not_verified",
+      "left": {"document": "annual", "pdf_page_index": 35, "quote": "EBITDA 1,266.41 (4,516.08)", "value": "1266.41", "unit": "million", "period": "FY2024"},
+      "right": {"document": "earnings", "pdf_page_index": 16, "quote": "EBITDA 13 109 46 (58.0%) 242.5% (452) 127", "value": "1270", "unit": "million", "period": "FY24"},
+      "reasoning": "Annual report consolidated financial performance states FY24 EBITDA as 1266.41 million. Earnings table FY24 states 127 crore, or 1270 million rounded to the nearest 10 million. The intervals overlap. Same publisher; independence is not claimed."
+    },
+    {
+      "id": "delhivery-ebitda-time-reconciliation", "dataset": "delhivery", "expected_label": "contextual_reconciliation", "evidence_status": "reviewed", "pipeline_status": "not_verified",
+      "left": {"document": "annual", "pdf_page_index": 35, "quote": "EBITDA 1,266.41 (4,516.08)", "value": "1266.41", "unit": "million", "period": "FY2024"},
+      "right": {"document": "earnings", "pdf_page_index": 16, "quote": "EBITDA 13 109 46 (58.0%) 242.5% (452) 127", "value": "-4520", "unit": "million", "period": "FY23"},
+      "reasoning": "The positive EBITDA describes FY24 and the negative EBITDA describes FY23. A change between fiscal years is not a contradiction. Both values are converted to millions using the source table units."
+    },
+    {
       "id": "delhivery-postal-corroboration", "dataset": "delhivery", "expected_label": "corroboration", "evidence_status": "reviewed", "pipeline_status": "not_verified",
       "left": {"document": "annual", "pdf_page_index": 21, "printed_page_label": "42-43", "quote": "provides services in 18,793 postal", "context_quotes": ["index number (\u201cPIN\u201d) codes, as of March 31, 2024."], "value": "18793", "unit": "postal PIN codes", "period": "2024-03-31"},
       "right": {"document": "earnings", "pdf_page_index": 7, "printed_page_label": "7", "quote": "Pin-code reach(1) 18,074 18,540 18,675 18,793", "context_quotes": ["As of end of / for the period", "Q4 FY22 Q4 FY23 Q3 FY24 Q4 FY24"], "value": "18793", "unit": "postal PIN codes", "period": "2024-03-31"},
@@ -38,9 +50,9 @@
     },
     {
       "id": "satyam-bank-balance-contradiction", "dataset": "additional-public-pdf", "expected_label": "likely_contradiction", "evidence_status": "reviewed", "pipeline_status": "not_verified",
-      "left": {"document": "sec", "pdf_page_index": 10, "printed_page_label": "11", "quote": "3/3I/08 $10,972,784 $214,506,068 $203,533,283 $290,500,000", "context_quotes": ["BoB Balance", "PerSatyam"], "value": "214506068", "unit": "USD", "period": "2008-03-31", "attribution": "Balance reported by Satyam, as reproduced in SEC complaint"},
-      "right": {"document": "sec", "pdf_page_index": 10, "printed_page_label": "11", "quote": "3/3I/08 $10,972,784 $214,506,068 $203,533,283 $290,500,000", "context_quotes": ["Balance per BoB Balance BoB Balance Reported", "Statements (Fraudulent) Equivalent"], "value": "10972784", "unit": "USD", "period": "2008-03-31", "attribution": "Balance per Bank of Baroda statements, as reproduced in SEC complaint"},
-      "reasoning": "The SEC explicitly compares actual Bank of Baroda account balances with what Satyam reported for the same fiscal year-end. These are competing assertions about the same account and date, not standalone versus consolidated scope, differing units, or forecast revisions. The table identifies a USD 203,533,283 overstatement. This is an attributed likely contradiction inside one PDF; only the corroboration requirement expressly requires separate documents. Preserve the SEC attribution and do not imply the application independently audited bank statements. The text layer reads 3/3I/08 with a capital I; validate the rendered source before using the normalized date in the demo."
+      "left": {"document": "sec", "pdf_page_index": 10, "printed_page_label": "11", "quote": "9/30/09 $10,836,569 $379,612,394 $368,775,824 $433,400,000", "context_quotes": ["BoB Balance", "PerSatyam"], "value": "379612394", "unit": "$", "period": "2009-09-30", "attribution": "Balance reported by Satyam, as reproduced in SEC complaint"},
+      "right": {"document": "sec", "pdf_page_index": 10, "printed_page_label": "11", "quote": "9/30/09 $10,836,569 $379,612,394 $368,775,824 $433,400,000", "context_quotes": ["Balance per BoB Balance BoB Balance Reported", "Statements (Fraudulent) Equivalent"], "value": "10836569", "unit": "$", "period": "2009-09-30", "attribution": "Balance per Bank of Baroda statements, as reproduced in SEC complaint"},
+      "reasoning": "The SEC table juxtaposes account statements and the company's reported balance for the same row dated September 30, 2009. Preserve the date and dollar amounts as printed. The engine compares attributed assertions rather than independently auditing them. The earlier rows contain unreadable date characters and are excluded from automatic date normalization. The reported overstatement is a third metric and is not itself treated as a competing balance."
     },
     {
       "id": "imf-unextractable-page", "dataset": "india-macroeconomy", "expected_label": "extraction_failure", "evidence_status": "reviewed", "pipeline_status": "not_verified",
