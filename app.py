@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tempfile
+import json
 from collections import Counter
 from pathlib import Path
 
@@ -9,7 +10,7 @@ import streamlit as st
 from crosscheck.db import Store
 from crosscheck.models import Fact, RelationshipKind
 from crosscheck.pdf import render_page
-from crosscheck.pipeline import process_pdf
+from crosscheck.pipeline import ProcessingEvent, process_pdf
 from crosscheck.local_ai import installed_models, ollama_status
 
 
@@ -64,6 +65,10 @@ def show_fact_evidence(
     st.caption(" · ".join(details))
     st.caption("Exact grounded quote")
     st.code(fact.original_text, language=None)
+    if fact.attributes.get("attribution"):
+        st.caption(f"Source attribution: {fact.attributes['attribution']}")
+    if fact.attributes.get("column_header"):
+        st.caption(f"Source column: {fact.attributes['column_header']}")
 
     if not evidence:
         st.warning("The source evidence record is unavailable.")
@@ -114,28 +119,45 @@ with tab_docs:
         available, message = ollama_status(ollama_model)
         (st.success if available else st.warning)(message)
     if st.button("Process documents", type="primary", disabled=not uploads):
-        progress = st.progress(0, text="Preparing documents")
-        total_uploads = len(uploads or [])
         with st.status("Processing documents", expanded=True) as status:
-          for index, upload in enumerate(uploads or []):
-            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as handle:
-                handle.write(upload.getvalue())
-                temporary_path = Path(handle.name)
-            try:
-                identifier = process_pdf(temporary_path, store, filename=upload.name, use_ollama=use_ollama, ollama_model=ollama_model, force=reprocess,
-                                         on_progress=lambda message: (progress.progress(min(0.99, index / total_uploads), text=message), status.write(message)))
-                result = store.document(identifier)
-                if result and result.status == "failed":
-                    st.error(f"Could not process {upload.name}. See document issues below.")
-                else:
-                    st.success(f"Processed {upload.name}")
-            except OSError as exc:
-                st.error(f"Could not process {upload.name}: {exc}")
-            finally:
-                temporary_path.unlink(missing_ok=True)
-            progress.progress((index + 1) / total_uploads, text=f"Processed {upload.name}")
-          status.update(label="Processing complete", state="complete", expanded=False)
-        progress.empty()
+            live_log = st.empty()
+            page_progress = st.empty()
+            lines: list[str] = []
+            outcomes: list[str] = []
+
+            def report(event: ProcessingEvent) -> None:
+                lines.append(f"{event.elapsed_seconds:7.2f}s | {event.filename} | {event.stage} | {event.message}")
+                live_log.code("\n".join(lines[-40:]), language=None)
+                if event.total_pages:
+                    page_progress.progress(event.completed_pages / event.total_pages,
+                                           text=f"{event.stage}: {event.completed_pages}/{event.total_pages} pages")
+                if event.stage in {"complete", "completed_with_issues", "failed", "cached", "interrupted"}:
+                    outcomes.append(event.stage)
+
+            for upload in uploads or []:
+                with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as handle:
+                    handle.write(upload.getvalue())
+                    temporary_path = Path(handle.name)
+                try:
+                    process_pdf(temporary_path, store, filename=upload.name, use_ollama=use_ollama,
+                                ollama_model=ollama_model, force=reprocess, on_progress=report)
+                except Exception as exc:
+                    st.error(f"Processing failed: {type(exc).__name__}. See the run log.")
+                finally:
+                    temporary_path.unlink(missing_ok=True)
+            failed = any(outcome in {"failed", "interrupted"} for outcome in outcomes)
+            has_issues = "completed_with_issues" in outcomes
+            status.update(label="Processing failed" if failed else "Completed with issues" if has_issues else "Processing complete",
+                          state="error" if failed else "complete", expanded=failed or has_issues)
+    runs = store.runs()
+    if runs:
+        with st.expander("Processing history"):
+            for run in runs:
+                st.caption(f"{run['filename']} | {run['status']}")
+                st.download_button("Download run log", data=run["events"],
+                                   file_name=f"crosscheck-{run['id']}.json", mime="application/json",
+                                   key=f"log-{run['id']}")
+            st.code("\n".join(event["message"] for event in json.loads(runs[0]["events"])[-40:]), language=None)
     documents = store.documents()
     if documents:
         st.dataframe(
@@ -212,6 +234,14 @@ with tab_facts:
 with tab_compare:
     st.subheader("Cross-document relationships")
     relationships = store.relationships()
+    result_path = Path("evaluation/results.json")
+    reviewed = {}
+    if result_path.exists():
+        saved = json.loads(result_path.read_text(encoding="utf-8"))
+        live_ids = {item.id for item in relationships}
+        reviewed = {case["id"]: case["relationship"]["id"] for case in saved["cases"]
+                    if case.get("demonstrated") and case.get("relationship", {}).get("id") in live_ids}
+    selected_case = st.selectbox("Verified demonstration", ["All relationships"] + list(reviewed))
     counts = Counter(item.kind for item in relationships)
     st.caption(
         " | ".join(
@@ -231,7 +261,9 @@ with tab_compare:
         help="These candidates are retained for review but do not have enough context for a conclusion.",
     )
     filtered = relationships
-    if selected_kind != "all":
+    if selected_case in reviewed:
+        filtered = [item for item in filtered if item.id == reviewed[selected_case]]
+    if selected_kind != "all" and selected_case not in reviewed:
         filtered = [item for item in filtered if item.kind.value == selected_kind]
     if not show_low_evidence:
         filtered = [item for item in filtered if item.kind != RelationshipKind.INSUFFICIENT_EVIDENCE]

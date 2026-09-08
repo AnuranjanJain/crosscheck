@@ -9,6 +9,7 @@ crosscheck.db
 tmp/
 outputs/
 data/documents/
+data/additional/
 data/starter-datasets/
 .pytest_cache/
 .ruff_cache/

@@ -19,3 +19,11 @@ The pipeline now resolves EBITDA corroboration and period reconciliation across 
 On a real table-adjacent excerpt, qwen2.5-coder:1.5b accepted 2 facts and rejected 3 quotations in 15.68 seconds; qwen2.5-coder:7b timed out at 60.03 seconds with no accepted facts. Retain baseline extraction as the default, with the installed 1.5b model optional. These are narrow observations, not accuracy or full-document throughput claims.
 
 32 tests and Ruff pass. Checkpoint commit: `fix: ground extracted claims and compare matching contexts`.
+
+## Processing checkpoint
+
+Processing now emits typed stage/page/count/elapsed events and stores downloadable run logs. Content plus extraction/model configuration determines cache reuse. Replacement writes occur in a transaction after extraction and comparison; interruption and injected write failure tests prove previous facts survive. Model failures and extraction warnings result in completed-with-issues rather than a misleading success message.
+
+Logs are retained for reruns. A force-killed process can leave a nonterminal log and must be retried; automatic chunk resume and concurrent worker scheduling are not implemented. The UI bounds the visible log to 40 events, while the download contains the full run.
+
+Checkpoint commit: `feat: add reliable processing states and authentic run logs`.
