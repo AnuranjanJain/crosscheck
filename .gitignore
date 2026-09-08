@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.streamlit/*
+!.streamlit/
+!.streamlit/config.toml
+crosscheck.db
+*.sqlite
+tmp/
+outputs/
+data/documents/
+data/starter-datasets/
+.pytest_cache/
