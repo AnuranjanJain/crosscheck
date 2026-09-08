@@ -58,7 +58,7 @@ The first release does not OCR image-only pages, reconstruct complex multi-page 
 
 ## Additional Notes
 
-AI assistance: Codex assisted with implementation, debugging, and regression checks. See `BUILDER_LOG.md` for observed failures and decisions. Tests use synthetic fixtures for repeatability; they are not submission evidence or accuracy measurements.
+AI assistance was used for implementation, debugging, and regression checks. Tests use synthetic fixtures for repeatability; they are not submission evidence or accuracy measurements.
 
 Submission remains incomplete until real corroboration and likely-contradiction examples are verified, held-out accuracy is measured, and the GitHub and video links are added. Successful runtime checks do not establish those requirements.
 
