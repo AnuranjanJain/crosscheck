@@ -1,5 +1,7 @@
 # Crosscheck Handoff For Claude Code
 
+> Historical handoff: implementation has changed since this snapshot. Read README.md, the latest BUILDER_LOG.md repair entry, and the current source before acting on the tasks below. Current runtime checks pass, but model inference, four real demo cases, and submission links are not all verified.
+
 ## What This Project Is
 
 Crosscheck is a local, evidence-first fact knowledge layer for the Superjoin VIT 2026 Engineering Intern assignment.

@@ -37,4 +37,6 @@ Rules for these labels:
 
 ## Current baseline measurement
 
-On 2026-09-08, the deterministic extractor processed all six supplied PDFs (511 pages) in 199.21 seconds and stored 24,137 candidate facts. The current indexed reconciliation pass took about 2 seconds and produced 200 contextual reconciliations, with no automatic corroboration or likely-contradiction labels. These are processing measurements, not accuracy scores. Manual development and held-out labels are now present under `evaluation/labels/` and should be used for scoring instead of the raw candidate count.
+On 2026-09-08, the earlier numeric-only deterministic extractor processed all six supplied PDFs (511 pages) in 199.21 seconds and stored 24,137 candidate facts. Its indexed reconciliation pass took about 2 seconds and produced 200 contextual reconciliations, with no automatic corroboration or likely-contradiction labels. These are pre-table-recovery processing measurements, not accuracy scores.
+
+After adding table recovery, printed-page detection, and semantic-fact extraction, a smoke test processed the 27-page Delhivery Q4 FY24 earnings deck in 1.44 seconds. It recovered 58 tables, 895 candidate facts, 7 semantic facts, and no processing issues. This is a narrow smoke measurement; run the full benchmark again before final submission and report that result separately for both datasets.

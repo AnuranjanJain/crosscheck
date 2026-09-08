@@ -1,5 +1,20 @@
 # Builder log
 
+## Theme and Ollama verification
+
+- Installed the pinned `ollama==0.5.1` Python client in the project virtual environment. The running service listed four installed coder models; added explicit installed-model selection to the UI and passed that selection to processing and retries.
+- Actual extraction using `qwen2.5-coder:1.5b` on a stored source excerpt returned one accepted fact with no issues in 5.72 seconds. This verifies a small request, not full-document throughput or extraction accuracy.
+- Updated the native palette and restrained layout styling. Compilation, 29 tests, Ruff, and the running server health check passed. Browser screenshot verification was not performed for this theme change.
+
+## Streamlit repair, 2026-09-08
+
+- Observed: mixed custom/native themes, duplicate evidence widgets, and assignment to button-owned session state. Removed custom CSS, configured a native light theme, and used scoped preview toggles. Streamlit AppTest verifies repeated facts, preview interaction, and empty search results.
+- Removed the interrupted key-helper test and unused sentence-transformers dependency. Kept existing source data and user tooling; excluded local caches and credentials from Git.
+- Fixed fiscal-period fragments being extracted as values, moved duplicate detection ahead of PDF parsing, added progress and explicit reprocessing, and stopped reporting failed PDFs as successful.
+- Local model calls now have a timeout and bounded output; after a model failure, remaining pages continue with the baseline. Ollama is not installed/running here, so successful inference has NOT been verified.
+- Observed check: a real 27-page earnings PDF produced 895 facts in 8.14 seconds with model extraction requested but unavailable. Duplicate upload, evidence resolution, PNG rendering, and malformed PDF handling passed. The full refresh finished with six documents, 26,877 candidate facts and two relationships; these counts are not accuracy scores.
+- The live-database preview check exposed a late-bound selector label referencing Compare's fact dictionary. Gave the inspector its own mapping and added an unrelated fact to the UI regression fixture. All 29 tests and Ruff pass; the actual database tabs and PDF-preview rerun pass under Streamlit AppTest. The restarted server returned HTTP 200 on its health endpoint. Browser screenshot verification was not performed in this repair.
+
 This log records decisions and observations as they happen. It is intentionally explicit about failures; it must be updated during implementation and demo preparation rather than reconstructed afterward.
 
 | Entry | Observation | Decision | Verification |
@@ -17,3 +32,5 @@ This log records decisions and observations as they happen. It is intentionally 
 | 2026-09-08 | Initial relationship selection was quadratic and early candidates produced false contextual labels when period was missing. | Index candidate pairs by shared subject-token pairs; require explicit period, unit, or scope differences for contextual reconciliation. | Full-corpus reconciliation completes in about 2 seconds; the deterministic baseline currently yields 200 contextual reconciliations, 0 corroborations, and 0 likely contradictions. |
 | 2026-09-08 | Manual evaluation labels were still missing, so the 24,137 candidates could be mistaken for accuracy. | Create versioned development and held-out JSON labels (>=20 facts and >=8 relationships per starter dataset) with exact pdfplumber quotes, plus a quote/schema validator. | `python scripts/validate_evaluation_labels.py` reports OK for all four label files; unit regression covers package presence and minimum counts. |
 | 2026-09-08 | Live Compare was dominated by false contextual pairs such as `percent` vs `million` and `%` vs `percent`. | Canonicalize unit synonyms, reject incompatible unit families as insufficient evidence, rank retained pairs, and harden Facts/Compare for large DBs. | Unit tests cover alias/incompatible/vocab-only cases; relationships rebuilt with `scripts/reconcile.py`; demo script rewritten to contextual + failure path. |
+| 2026-09-08 | Review found declared-but-disabled SQLite foreign keys, full relationship rebuilds after every upload, missing table/page-label persistence, and no metric identity guard before a contradiction label. | Enable foreign keys, persist recovered tables and printed labels, compare only newly added facts against existing facts, and require metric identity plus source-precision checks. | 24 pytest tests and Ruff pass; a 27-page Q4 deck smoke test recovered 58 tables and 7 semantic facts in 1.44 seconds without issues. |
+| 2026-09-08 | A pre-change Streamlit worker raised `AttributeError` after the page-coverage method was added, and repeated facts in Compare raised `StreamlitDuplicateElementKey` for source-preview buttons. | Restart the stale worker and namespace preview keys by view, relationship, and claim side. | The fresh server listens on port 8501; 25 pytest tests and Ruff pass after the regression fixes. |

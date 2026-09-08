@@ -8,7 +8,7 @@ from .models import Document, Evidence, Fact, ProcessingIssue, Relationship
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS documents (id TEXT PRIMARY KEY, filename TEXT NOT NULL, sha256 TEXT UNIQUE NOT NULL, page_count INTEGER NOT NULL, status TEXT NOT NULL, warnings TEXT NOT NULL, created_at TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS evidence (id TEXT PRIMARY KEY, document_id TEXT NOT NULL REFERENCES documents(id), page_index INTEGER NOT NULL, printed_page TEXT, text TEXT NOT NULL, heading TEXT, bbox TEXT);
+CREATE TABLE IF NOT EXISTS evidence (id TEXT PRIMARY KEY, document_id TEXT NOT NULL REFERENCES documents(id), page_index INTEGER NOT NULL, printed_page TEXT, text TEXT NOT NULL, heading TEXT, bbox TEXT, tables TEXT NOT NULL DEFAULT '[]');
 CREATE TABLE IF NOT EXISTS facts (id TEXT PRIMARY KEY, document_id TEXT NOT NULL REFERENCES documents(id), evidence_id TEXT NOT NULL REFERENCES evidence(id), subject TEXT NOT NULL, predicate TEXT NOT NULL, original_text TEXT NOT NULL, value_text TEXT, value_number REAL, unit TEXT, period TEXT, scope TEXT, status TEXT NOT NULL, attributes TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS relationships (id TEXT PRIMARY KEY, left_fact_id TEXT NOT NULL REFERENCES facts(id), right_fact_id TEXT NOT NULL REFERENCES facts(id), kind TEXT NOT NULL, confidence REAL NOT NULL, explanation TEXT NOT NULL, created_at TEXT NOT NULL, UNIQUE(left_fact_id, right_fact_id));
 CREATE TABLE IF NOT EXISTS issues (id TEXT PRIMARY KEY, document_id TEXT NOT NULL REFERENCES documents(id), page_index INTEGER, code TEXT NOT NULL, message TEXT NOT NULL, recoverable INTEGER NOT NULL, created_at TEXT NOT NULL);
@@ -21,7 +21,9 @@ class Store:
         database_path.parent.mkdir(parents=True, exist_ok=True)
         self.connection = sqlite3.connect(str(database_path))
         self.connection.row_factory = sqlite3.Row
+        self.connection.execute("PRAGMA foreign_keys = ON")
         self.connection.executescript(SCHEMA)
+        self._ensure_column("evidence", "tables", "TEXT NOT NULL DEFAULT '[]'")
         self.connection.commit()
 
     def close(self) -> None:
@@ -40,7 +42,19 @@ class Store:
         self.connection.commit()
 
     def save_evidence(self, item: Evidence) -> None:
-        self.connection.execute("INSERT OR REPLACE INTO evidence VALUES (?,?,?,?,?,?,?)", (item.id, item.document_id, item.page_index, item.printed_page, item.text, item.heading, json.dumps(item.bbox)))
+        self.connection.execute(
+            "INSERT OR REPLACE INTO evidence (id, document_id, page_index, printed_page, text, heading, bbox, tables) VALUES (?,?,?,?,?,?,?,?)",
+            (
+                item.id,
+                item.document_id,
+                item.page_index,
+                item.printed_page,
+                item.text,
+                item.heading,
+                json.dumps(item.bbox),
+                json.dumps([table.model_dump(mode="json") for table in item.tables]),
+            ),
+        )
         self.connection.commit()
 
     def save_fact(self, item: Fact) -> None:
@@ -82,7 +96,33 @@ class Store:
         if not row:
             return None
         bbox = json.loads(row["bbox"]) if row["bbox"] else None
-        return Evidence(id=row["id"], document_id=row["document_id"], page_index=row["page_index"], printed_page=row["printed_page"], text=row["text"], heading=row["heading"], bbox=tuple(bbox) if bbox else None)
+        tables = json.loads(row["tables"]) if "tables" in row.keys() and row["tables"] else []
+        return Evidence(
+            id=row["id"],
+            document_id=row["document_id"],
+            page_index=row["page_index"],
+            printed_page=row["printed_page"],
+            text=row["text"],
+            heading=row["heading"],
+            bbox=tuple(bbox) if bbox else None,
+            tables=tables,
+        )
+
+    def evidence_count(self, document_id: str) -> int:
+        row = self.connection.execute("SELECT COUNT(*) AS count FROM evidence WHERE document_id=?", (document_id,)).fetchone()
+        return int(row["count"])
+
+    def document_stats(self, document_id: str) -> dict[str, int]:
+        rows = self.connection.execute("SELECT attributes FROM facts WHERE document_id=?", (document_id,)).fetchall()
+        model_facts = sum(json.loads(row["attributes"]).get("extractor") == "ollama" for row in rows)
+        tables = self.connection.execute("SELECT tables FROM evidence WHERE document_id=?", (document_id,)).fetchall()
+        return {"facts": len(rows), "model_facts": model_facts,
+                "text_pages": len(tables), "tables": sum(len(json.loads(row["tables"])) for row in tables)}
+
+    def _ensure_column(self, table: str, column: str, definition: str) -> None:
+        columns = {row["name"] for row in self.connection.execute(f"PRAGMA table_info({table})")}
+        if column not in columns:
+            self.connection.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
 
     def facts(self, query: str = "", limit: int | None = None) -> list[Fact]:
         sql = "SELECT * FROM facts WHERE subject LIKE ? OR predicate LIKE ? OR original_text LIKE ? ORDER BY rowid DESC"

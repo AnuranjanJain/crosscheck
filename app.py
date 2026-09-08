@@ -7,32 +7,92 @@ from pathlib import Path
 import streamlit as st
 
 from crosscheck.db import Store
-from crosscheck.models import RelationshipKind
+from crosscheck.models import Fact, RelationshipKind
 from crosscheck.pdf import render_page
 from crosscheck.pipeline import process_pdf
+from crosscheck.local_ai import installed_models, ollama_status
 
 
 st.set_page_config(page_title="Crosscheck", page_icon="C", layout="wide")
-st.markdown(
-    """
+st.markdown("""
 <style>
-    .stApp { background: #f7f8f6; color: #17211c; }
-    [data-testid="stHeader"] { background: rgba(247, 248, 246, 0.9); }
-    h1 { font-family: Georgia, serif; color: #173b2a; margin-bottom: 0; }
-    [data-baseweb="tab-list"] { gap: 1rem; border-bottom: 1px solid #dbe3dd; }
-    [data-baseweb="tab"] { height: 3rem; padding: 0 0.2rem; font-weight: 600; }
-    [data-baseweb="tab"]:hover { color: #1b6b47; }
-    [aria-selected="true"] { color: #175e3d !important; border-bottom-color: #175e3d !important; }
-    [data-testid="stDataFrame"] { border: 1px solid #dbe3dd; border-radius: 6px; }
-    .stButton > button { border-radius: 5px; font-weight: 650; }
+.block-container { max-width: 1440px; padding-top: 2.5rem; padding-bottom: 3rem; }
+h1 { font-size: 2rem !important; font-weight: 700 !important; }
+h2, h3 { font-size: 1.25rem !important; }
+[data-baseweb="tab-list"] { gap: 1.5rem; border-bottom: 1px solid #d9dfe5; }
+[data-baseweb="tab"] { padding: 0.75rem 0.25rem; font-weight: 600; }
+[data-testid="stExpander"] { border-radius: 6px; }
+[data-testid="stMetricValue"] { font-size: 1.6rem; }
+button { border-radius: 6px !important; }
+@media (max-width: 640px) {
+    .block-container { padding: 1.5rem 1rem; }
+    [data-baseweb="tab-list"] { gap: 1rem; }
+}
 </style>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 st.title("Crosscheck")
 st.caption("Evidence-first fact checking across documents")
 
 store = Store(Path("crosscheck.db"))
+
+
+def show_fact_evidence(
+    label: str,
+    fact_id: str,
+    facts_by_id: dict[str, Fact],
+    widget_namespace: str,
+) -> None:
+    fact = facts_by_id.get(fact_id)
+    if fact is None:
+        st.warning("The referenced fact is no longer available.")
+        return
+
+    evidence = store.evidence(fact.evidence_id)
+    document = store.document(fact.document_id)
+    filename = document.filename if document else "unknown document"
+    details = [
+        f"period: {fact.period or 'not extracted'}",
+        f"unit: {fact.unit or 'not extracted'}",
+        f"scope: {fact.scope or 'not extracted'}",
+    ]
+    estimate_status = fact.attributes.get("estimate_status")
+    if estimate_status:
+        details.append(f"status: {estimate_status}")
+
+    st.markdown(f"**{label}**")
+    st.markdown(f"**{fact.subject}**")
+    st.caption(" · ".join(details))
+    st.caption("Exact grounded quote")
+    st.code(fact.original_text, language=None)
+
+    if not evidence:
+        st.warning("The source evidence record is unavailable.")
+        return
+
+    printed = f" · printed page {evidence.printed_page}" if evidence.printed_page else ""
+    st.caption(f"{filename} · PDF page {evidence.page_index + 1}{printed}")
+    with st.expander("Source text and recovered tables"):
+        st.text(evidence.text)
+        for index, table in enumerate(evidence.tables, start=1):
+            st.caption(f"Recovered table {index}")
+            st.dataframe(table.rows, width="stretch", hide_index=True)
+
+    preview_key = f"show-page-{widget_namespace}-{fact.id}"
+    show_preview = st.toggle("Show source page", key=preview_key)
+    if show_preview and document:
+        source = Path("data/documents") / f"{document.sha256}.pdf"
+        if not source.exists():
+            st.warning("The cached source PDF is unavailable for preview.")
+            return
+        try:
+            st.image(
+                render_page(source, evidence.page_index),
+                caption=f"{document.filename}, PDF page {evidence.page_index + 1}",
+            )
+        except Exception as exc:  # noqa: BLE001 - a preview failure must not hide the evidence
+            st.warning(f"Source-page preview unavailable: {exc}")
+
+
 tab_docs, tab_facts, tab_compare = st.tabs(["Documents", "Facts", "Compare"])
 
 with tab_docs:
@@ -42,19 +102,40 @@ with tab_docs:
         "Use local Ollama extraction",
         help="Requires Ollama and a locally downloaded model. Ungrounded model claims are rejected.",
     )
+    reprocess = st.checkbox("Reprocess existing documents", value=False)
+    ollama_model = "qwen2.5:3b"
+    if use_ollama:
+        try:
+            model_options = installed_models()
+        except (OSError, ValueError, KeyError, TypeError):
+            model_options = []
+        if model_options:
+            ollama_model = st.selectbox("Local model", model_options)
+        available, message = ollama_status(ollama_model)
+        (st.success if available else st.warning)(message)
     if st.button("Process documents", type="primary", disabled=not uploads):
         progress = st.progress(0, text="Preparing documents")
-        for index, upload in enumerate(uploads or []):
+        total_uploads = len(uploads or [])
+        with st.status("Processing documents", expanded=True) as status:
+          for index, upload in enumerate(uploads or []):
             with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as handle:
                 handle.write(upload.getvalue())
                 temporary_path = Path(handle.name)
             try:
-                process_pdf(temporary_path, store, filename=upload.name, use_ollama=use_ollama)
+                identifier = process_pdf(temporary_path, store, filename=upload.name, use_ollama=use_ollama, ollama_model=ollama_model, force=reprocess,
+                                         on_progress=lambda message: (progress.progress(min(0.99, index / total_uploads), text=message), status.write(message)))
+                result = store.document(identifier)
+                if result and result.status == "failed":
+                    st.error(f"Could not process {upload.name}. See document issues below.")
+                else:
+                    st.success(f"Processed {upload.name}")
+            except OSError as exc:
+                st.error(f"Could not process {upload.name}: {exc}")
             finally:
                 temporary_path.unlink(missing_ok=True)
-            progress.progress((index + 1) / len(uploads), text=f"Processed {upload.name}")
+            progress.progress((index + 1) / total_uploads, text=f"Processed {upload.name}")
+          status.update(label="Processing complete", state="complete", expanded=False)
         progress.empty()
-        st.success("Processing complete. Evidence is stored locally.")
     documents = store.documents()
     if documents:
         st.dataframe(
@@ -62,8 +143,11 @@ with tab_docs:
                 {
                     "file": doc.filename,
                     "pages": doc.page_count,
+                    "text pages": store.evidence_count(doc.id),
                     "status": doc.status,
-                    "warnings": len(doc.warnings),
+                    "issues": len(store.issues(doc.id)),
+                    "facts": store.document_stats(doc.id)["facts"],
+                    "tables": store.document_stats(doc.id)["tables"],
                 }
                 for doc in documents
             ],
@@ -72,14 +156,21 @@ with tab_docs:
         )
         for document in documents:
             with st.expander(f"{document.filename} details"):
-                for warning in document.warnings:
-                    st.warning(warning)
-                for issue in store.issues(document.id):
-                    st.error(f"{issue.code}: {issue.message}")
+                issues = store.issues(document.id)
+                stats = store.document_stats(document.id)
+                st.caption(f"{stats['facts']:,} grounded facts · {stats['tables']:,} recovered tables · {stats['text_pages']:,}/{document.page_count:,} pages with text")
+                st.caption(f"SHA-256: {document.sha256}")
+                if not issues:
+                    for warning in document.warnings:
+                        st.warning(warning)
+                for issue in issues:
+                    page = f"PDF page {issue.page_index + 1}: " if issue.page_index is not None else ""
+                    message = "No extractable text. This page was skipped; OCR is not enabled." if issue.code == "empty_page" else issue.message
+                    (st.warning if issue.recoverable else st.error)(page + message)
                 if document.status == "failed":
                     source = Path("data/documents") / f"{document.sha256}.pdf"
                     if st.button("Retry failed document", key=f"retry-{document.id}") and source.exists():
-                        process_pdf(source, store, filename=document.filename, use_ollama=use_ollama, force=True)
+                        process_pdf(source, store, filename=document.filename, use_ollama=use_ollama, ollama_model=ollama_model, force=True)
                         st.rerun()
     else:
         st.info("Upload the starter PDFs or any compatible PDF to begin.")
@@ -89,13 +180,10 @@ with tab_facts:
     query = st.text_input("Search facts", placeholder="revenue, GDP, customers")
     total_facts = store.fact_count(query)
     display_limit = 200
-    if not query.strip():
-        st.caption(f"{total_facts:,} facts stored. Enter a search term to inspect grounded claims.")
-        facts = []
-    else:
-        facts = store.facts(query, limit=display_limit)
-        shown = min(len(facts), display_limit)
-        st.caption(f"Showing {shown:,} of {total_facts:,} matching facts.")
+    facts = store.facts(query, limit=display_limit)
+    st.caption(f"Showing {len(facts):,} of {total_facts:,} matching facts.")
+    if not facts:
+        st.info("No matching facts." if query else "No facts extracted yet.")
     if facts:
         st.dataframe(
             [
@@ -113,6 +201,13 @@ with tab_facts:
             width="stretch",
             hide_index=True,
         )
+        inspector_facts_by_id = {fact.id: fact for fact in facts}
+        selected_fact_id = st.selectbox(
+            "Inspect a fact",
+            options=list(inspector_facts_by_id),
+            format_func=lambda identifier: f"{inspector_facts_by_id[identifier].subject} · {identifier[:8]}",
+        )
+        show_fact_evidence("Grounded fact", selected_fact_id, inspector_facts_by_id, "fact-inspector")
 
 with tab_compare:
     st.subheader("Cross-document relationships")
@@ -128,9 +223,7 @@ with tab_compare:
     selected_kind = st.selectbox(
         "Relationship filter",
         options=kind_options,
-        index=kind_options.index(RelationshipKind.CONTEXTUAL_RECONCILIATION.value)
-        if RelationshipKind.CONTEXTUAL_RECONCILIATION.value in kind_options
-        else 0,
+        index=0,
     )
     show_low_evidence = st.checkbox(
         "Show low-evidence candidates",
@@ -153,27 +246,20 @@ with tab_compare:
     for relationship in display_relationships:
         with st.expander(f"{relationship.kind.value.replace('_', ' ').title()} · {relationship.confidence:.0%}"):
             st.write(relationship.explanation)
-            for label, fact_id in (("Claim A", relationship.left_fact_id), ("Claim B", relationship.right_fact_id)):
-                fact = facts_by_id.get(fact_id)
-                if not fact:
-                    continue
-                evidence = store.evidence(fact.evidence_id)
-                st.markdown(f"**{label}:** {fact.original_text}")
-                document = store.document(fact.document_id)
-                filename = document.filename if document else "unknown document"
-                if evidence:
-                    printed = f", printed page {evidence.printed_page}" if evidence.printed_page else ""
-                    st.caption(f"{filename} · PDF page {evidence.page_index + 1}{printed}")
-                    st.code(evidence.text[:1600])
-                    if document:
-                        source = Path("data/documents") / f"{document.sha256}.pdf"
-                        if source.exists():
-                            try:
-                                st.image(
-                                    render_page(source, evidence.page_index),
-                                    caption=f"{document.filename}, PDF page {evidence.page_index + 1}",
-                                )
-                            except Exception as exc:  # noqa: BLE001 - keep preview failures non-fatal
-                                st.warning(f"Source-page preview unavailable: {exc}")
+            left_column, right_column = st.columns(2)
+            with left_column:
+                show_fact_evidence(
+                    "Claim A",
+                    relationship.left_fact_id,
+                    facts_by_id,
+                    f"{relationship.id}-left",
+                )
+            with right_column:
+                show_fact_evidence(
+                    "Claim B",
+                    relationship.right_fact_id,
+                    facts_by_id,
+                    f"{relationship.id}-right",
+                )
 
 store.close()

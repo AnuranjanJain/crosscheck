@@ -6,9 +6,9 @@ from decimal import Decimal
 from itertools import combinations
 from uuid import uuid4
 
+from .identity import metric_terms, shares_metric_identity
 from .models import Fact, Relationship, RelationshipKind
 
-IGNORED_WORDS = {"from", "with", "the", "and", "for", "our", "was", "were"}
 UNIT_ALIASES = {
     "%": "percent",
     "pct": "percent",
@@ -34,14 +34,7 @@ UNIT_FAMILIES = {
 FISCAL_YEAR = re.compile(r"^FY\s*(\d{2}|\d{4})$", re.I)
 FISCAL_RANGE = re.compile(r"^(?:FY\s*)?(\d{4})\s*[-/]\s*(\d{2}|\d{4})$", re.I)
 YEAR_ONLY = re.compile(r"^(\d{4})$")
-
-
-def _tokens(text: str) -> list[str]:
-    return [word for word in re.findall(r"[a-z]{3,}", text.lower()) if word not in IGNORED_WORDS]
-
-
-def _terms(text: str, limit: int = 12) -> list[str]:
-    return list(dict.fromkeys(_tokens(text)))[:limit]
+VALUE_NUMBER = re.compile(r"\(?-?\d[\d,]*(?:\.\d+)?\)?")
 
 
 def _normalize_unit(unit: str | None) -> str | None:
@@ -101,6 +94,40 @@ def _normalize_period(period: str | None) -> str | None:
     return cleaned
 
 
+def _source_precision_increment(fact: Fact) -> Decimal:
+    stored = fact.attributes.get("source_precision_increment") if fact.attributes else None
+    if isinstance(stored, (int, float, str)):
+        try:
+            value = Decimal(str(stored))
+            if value > 0:
+                return value
+        except ArithmeticError:
+            pass
+
+    source = fact.value_text or str(fact.value_number or "")
+    match = VALUE_NUMBER.search(source)
+    if not match:
+        return Decimal(0)
+    raw = match.group(0).strip("()").replace(",", "")
+    decimal_places = len(raw.partition(".")[2]) if "." in raw else 0
+    return Decimal(1).scaleb(-decimal_places)
+
+
+def _values_overlap_at_source_precision(left: Fact, right: Fact) -> bool:
+    """Compare rounding intervals derived from each source's stated precision."""
+    left_value = Decimal(str(left.value_number))
+    right_value = Decimal(str(right.value_number))
+    left_increment = _source_precision_increment(left)
+    right_increment = _source_precision_increment(right)
+    if left_increment == 0 or right_increment == 0:
+        return left_value == right_value
+    left_lower = left_value - left_increment / 2
+    left_upper = left_value + left_increment / 2
+    right_lower = right_value - right_increment / 2
+    right_upper = right_value + right_increment / 2
+    return max(left_lower, right_lower) < min(left_upper, right_upper)
+
+
 def _fact_priority(fact: Fact) -> tuple[int, int, int]:
     has_period = 0 if fact.period else 1
     has_unit = 0 if fact.unit else 1
@@ -119,6 +146,16 @@ def _relationship_rank(relationship: Relationship) -> tuple[int, float]:
 
 
 def compare_facts(left: Fact, right: Fact) -> Relationship:
+    if not shares_metric_identity(left, right):
+        return Relationship(
+            id=uuid4().hex,
+            left_fact_id=left.id,
+            right_fact_id=right.id,
+            kind=RelationshipKind.INSUFFICIENT_EVIDENCE,
+            confidence=0.2,
+            explanation="The claims do not identify the same metric, so no numerical conclusion is made.",
+        )
+
     left_unit = _normalize_unit(left.unit)
     right_unit = _normalize_unit(right.unit)
     left_family = _unit_family(left_unit)
@@ -128,14 +165,9 @@ def compare_facts(left: Fact, right: Fact) -> Relationship:
 
     same_period = bool(left_period and right_period and left_period == right_period)
     different_period = bool(left_period and right_period and left_period != right_period)
-    reporting_scopes = {"standalone", "consolidated"}
     left_scope = left.scope.lower() if left.scope else None
     right_scope = right.scope.lower() if right.scope else None
-    different_scope = bool(
-        left_scope in reporting_scopes
-        and right_scope in reporting_scopes
-        and left_scope != right_scope
-    )
+    different_scope = bool(left_scope and right_scope and left_scope != right_scope)
     left_estimate = (left.attributes or {}).get("estimate_status")
     right_estimate = (right.attributes or {}).get("estimate_status")
     different_estimate = bool(left_estimate and right_estimate and left_estimate != right_estimate)
@@ -145,17 +177,12 @@ def compare_facts(left: Fact, right: Fact) -> Relationship:
 
     if left.value_number is not None and right.value_number is not None:
         difference = abs(Decimal(str(left.value_number)) - Decimal(str(right.value_number)))
+        values_agree = _values_overlap_at_source_precision(left, right)
         if incompatible_units:
             kind, confidence, explanation = (
                 RelationshipKind.INSUFFICIENT_EVIDENCE,
                 0.25,
                 "The claims use incompatible units, so they are not compared as the same metric.",
-            )
-        elif same_period and same_unit and difference == 0 and not different_scope:
-            kind, confidence, explanation = (
-                RelationshipKind.CORROBORATION,
-                0.98,
-                "The claims report the same normalized value for the same period and unit.",
             )
         elif different_scope or different_period or different_unit or different_estimate:
             reasons: list[str] = []
@@ -170,13 +197,33 @@ def compare_facts(left: Fact, right: Fact) -> Relationship:
             kind, confidence, explanation = (
                 RelationshipKind.CONTEXTUAL_RECONCILIATION,
                 0.91,
-                "The claims differ by " + ", ".join(reasons) + ", so the numerical difference is not classified as a contradiction.",
+                "The claims differ by "
+                + ", ".join(reasons)
+                + ", so the numerical difference is not classified as a contradiction.",
+            )
+        elif same_period and same_unit and values_agree:
+            precision_note = "The values match exactly."
+            if difference:
+                precision_note = "The sources' stated precision produces overlapping rounding intervals."
+            kind, confidence, explanation = (
+                RelationshipKind.CORROBORATION,
+                0.98,
+                f"The claims identify the same metric, period, and unit. {precision_note}",
             )
         elif same_period and same_unit and difference > 0:
+            missing_context = [
+                label
+                for label, value in (("scope", left_scope and right_scope), ("estimate status", left_estimate and right_estimate))
+                if not value
+            ]
+            caveat = ""
+            if missing_context:
+                caveat = " Missing " + " and ".join(missing_context) + " remains visible for review."
             kind, confidence, explanation = (
                 RelationshipKind.LIKELY_CONTRADICTION,
-                0.78,
-                "The claims refer to the same apparent period and unit but report different normalized values; review scope and estimate status.",
+                0.78 if not missing_context else 0.58,
+                "The claims identify the same metric, period, and unit but report non-overlapping values."
+                + caveat,
             )
         else:
             kind, confidence, explanation = (
@@ -201,7 +248,13 @@ def compare_facts(left: Fact, right: Fact) -> Relationship:
     )
 
 
-def candidate_pairs(facts: list[Fact], limit: int = 200, max_candidates: int = 80_000) -> list[Relationship]:
+def candidate_pairs(
+    facts: list[Fact],
+    limit: int = 200,
+    max_candidates: int = 80_000,
+    include_fact_ids: set[str] | None = None,
+) -> list[Relationship]:
+    """Return bounded cross-document comparisons, optionally only for new facts."""
     ordered = sorted(range(len(facts)), key=lambda index: _fact_priority(facts[index]))
     relationships: list[Relationship] = []
     buckets: dict[tuple[str, str], list[int]] = defaultdict(list)
@@ -210,11 +263,13 @@ def candidate_pairs(facts: list[Fact], limit: int = 200, max_candidates: int = 8
 
     for index in ordered:
         right = facts[index]
-        terms = _terms(f"{right.subject} {right.predicate}")
+        terms = list(dict.fromkeys(metric_terms(f"{right.subject} {right.predicate}")))[:12]
         for token_pair in combinations(sorted(terms), 2):
             for left_index in buckets[token_pair]:
                 left = facts[left_index]
                 if left.document_id == right.document_id:
+                    continue
+                if include_fact_ids is not None and left.id not in include_fact_ids and right.id not in include_fact_ids:
                     continue
                 pair_id = tuple(sorted((left.id, right.id)))
                 if pair_id in seen:

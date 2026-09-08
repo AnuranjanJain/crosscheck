@@ -29,6 +29,14 @@ class Document(BaseModel):
     created_at: datetime = Field(default_factory=utc_now)
 
 
+class ExtractedTable(BaseModel):
+    """A table recovered from one source page without flattening its row structure."""
+
+    model_config = ConfigDict(extra="forbid")
+    bbox: tuple[float, float, float, float] | None = None
+    rows: list[list[str | None]] = Field(default_factory=list)
+
+
 class Evidence(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: str
@@ -38,6 +46,7 @@ class Evidence(BaseModel):
     text: str
     heading: str | None = None
     bbox: tuple[float, float, float, float] | None = None
+    tables: list[ExtractedTable] = Field(default_factory=list)
 
 
 class Fact(BaseModel):
