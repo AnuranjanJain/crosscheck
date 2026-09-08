@@ -72,6 +72,52 @@ class CrosscheckTests(unittest.TestCase):
         unrelated = self.fact("b", 6.5, "")
         self.assertEqual(candidate_pairs([unresolved, unrelated]), [])
 
+    def test_percent_alias_matches_percent_unit(self):
+        left = self.fact("a", 4.6, "FY24", "percent")
+        right = self.fact("b", 4.6, "FY24", "%")
+        self.assertEqual(compare_facts(left, right).kind, RelationshipKind.CORROBORATION)
+
+    def test_fiscal_year_aliases_are_same_period(self):
+        left = self.fact("a", 6.5, "FY24", "percent")
+        right = self.fact("b", 6.5, "FY2024", "percent")
+        self.assertEqual(compare_facts(left, right).kind, RelationshipKind.CORROBORATION)
+
+    def test_fiscal_range_aliases_match_end_year(self):
+        left = self.fact("a", 6.5, "2024-25", "percent")
+        right = self.fact("b", 6.5, "FY25", "percent")
+        self.assertEqual(compare_facts(left, right).kind, RelationshipKind.CORROBORATION)
+
+    def test_incompatible_units_are_insufficient(self):
+        left = self.fact("a", 6.5, "FY25", "percent")
+        right = self.fact("b", 81415.38, "FY25", "million")
+        self.assertEqual(compare_facts(left, right).kind, RelationshipKind.INSUFFICIENT_EVIDENCE)
+
+    def test_vocabulary_only_overlap_is_insufficient(self):
+        left = Fact(id="a", document_id="doc-a", evidence_id="ev-a", subject="Revenue from operations", predicate="reports revenue", original_text="Revenue discussion", value_text=None, value_number=None, unit=None, period="FY24")
+        right = Fact(id="b", document_id="doc-b", evidence_id="ev-b", subject="Revenue from operations", predicate="reports revenue", original_text="Revenue discussion", value_text=None, value_number=None, unit=None, period="FY24")
+        self.assertEqual(compare_facts(left, right).kind, RelationshipKind.INSUFFICIENT_EVIDENCE)
+
+    def test_evaluation_label_package_exists_with_required_counts(self):
+        root = Path(__file__).resolve().parents[1]
+        labels_dir = root / "evaluation" / "labels"
+        required = [
+            "delhivery.development.v1.json",
+            "delhivery.held_out.v1.json",
+            "india_macroeconomy.development.v1.json",
+            "india_macroeconomy.held_out.v1.json",
+        ]
+        self.assertTrue((root / "evaluation" / "schema.json").exists())
+        for name in required:
+            path = labels_dir / name
+            self.assertTrue(path.exists(), msg=f"missing {name}")
+            payload = __import__("json").loads(path.read_text(encoding="utf-8"))
+            self.assertGreaterEqual(len(payload["facts"]), 20, msg=name)
+            self.assertGreaterEqual(len(payload["relationships"]), 8, msg=name)
+            fact_ids = {fact["id"] for fact in payload["facts"]}
+            for rel in payload["relationships"]:
+                self.assertIn(rel["left_fact_id"], fact_ids)
+                self.assertIn(rel["right_fact_id"], fact_ids)
+
 
 if __name__ == "__main__":
     unittest.main()

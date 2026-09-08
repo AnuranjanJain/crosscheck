@@ -1,15 +1,11 @@
 # 2 minute 50 second demo script
 
-**0:00-0:20:** Introduce Crosscheck as a local fact knowledge layer. Upload one Delhivery PDF and one India macroeconomy PDF. Point out that source files are fingerprinted and evidence remains local.
+**0:00-0:25:** Introduce Crosscheck as a local, evidence-first fact knowledge layer. Open Documents and show the six starter PDFs already processed. Point out local fingerprinting, page counts, and that source files stay on the machine.
 
-**0:20-0:45:** Show the Documents table, progress completion, page counts, and a warning or processing issue if one occurs. Open the Facts view and search for a numerical subject.
+**0:25-0:55:** Switch to Facts. Search `revenue`, then `GDP`. Emphasize that the table is search-driven over tens of thousands of candidates, and every accepted claim remains tied to stored evidence.
 
-**0:45-1:15:** Open a corroborated pair. Read the relationship explanation, then show both source excerpts and page previews.
+**0:55-1:35:** Open Compare. Use the relationship summary and keep the filter on contextual reconciliation. Expand the GDP growth pair that differs by fiscal period (for example FY25 versus FY2025/26). Read the explanation, then show both excerpts with document filename and PDF page index plus the page preview. State clearly that a period, unit, or scope difference is preserved as reconciliation rather than called a contradiction.
 
-**1:15-1:45:** Open a likely contradiction only after manually verifying it is defensible. Show the same period and unit, both values, and explain that Crosscheck preserves both claims instead of declaring a winner.
+**1:35-2:10:** Return to Documents and open the IMF excerpt. Show the real extraction failure: page 1 has no extractable text and OCR is not enabled. Treat that warning as an honest system limitation, not a hidden error.
 
-**1:45-2:15:** Open a contextual reconciliation. Use the Delhivery standalone versus consolidated revenue case or a unit/period distinction. Show why the system did not call it a contradiction.
-
-**2:15-2:35:** Show a real extraction failure, such as an image-only page or malformed table. Explain the warning and the current limitation.
-
-**2:35-2:50:** State the next steps: OCR, table recovery, local-model benchmark, held-out evaluation, and semantic retrieval. If processing was pre-recorded, label the elapsed time and say so.
+**2:10-2:50:** Close with next steps: stronger context extraction, embedding retrieval for better candidate ranking, held-out scoring against the reviewed labels, and optional OCR. Do not claim corroboration or likely-contradiction demos in this presentation. If processing was pre-recorded, say so and cite the measured elapsed time.

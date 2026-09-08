@@ -70,11 +70,18 @@ The last point is a limitation, not a success claim. Do not tell reviewers that 
 
 Work in this order. Preserve the current deterministic baseline while adding improvements behind explicit, testable boundaries.
 
-### 1. Create a reviewed evaluation set
+### 1. Create a reviewed evaluation set — DONE
 
-Add a versioned, small JSON or CSV label file containing at least 20 facts and 8 relationship pairs for each starter dataset. Each row should include document filenames, PDF page indexes, exact evidence quotes, expected fact fields, expected relationship label, and a short human rationale.
+Completed under `evaluation/`:
 
-Keep development labels separate from held-out labels. Do not call the current 24,137 candidates an accuracy score.
+- `evaluation/schema.json`
+- `evaluation/labels/delhivery.development.v1.json`
+- `evaluation/labels/delhivery.held_out.v1.json`
+- `evaluation/labels/india_macroeconomy.development.v1.json`
+- `evaluation/labels/india_macroeconomy.held_out.v1.json`
+- validator: `python scripts/validate_evaluation_labels.py`
+
+Each file has >=20 facts and >=8 relationships with filenames, zero-based PDF page indexes, exact contiguous evidence quotes, expected fields, labels, and rationales. Development and held-out are separate. Do not call the 24,137 candidates an accuracy score. These labels do not yet claim a reviewed likely-contradiction demo case.
 
 ### 2. Improve candidate retrieval
 
@@ -126,8 +133,11 @@ Update `README.md` with the real video URL, setup verification, evaluation resul
 - `scripts/evaluate.py`: local benchmark.
 - `scripts/export_results.py`: JSON export.
 - `scripts/reconcile.py`: rebuild relationships after comparison-rule changes.
+- `scripts/validate_evaluation_labels.py`: schema + exact-quote checks for reviewed labels.
+- `evaluation/schema.json` and `evaluation/labels/*.v1.json`: development/held-out reviewed labels.
 - `README.md`: required assignment submission sections.
 - `docs/DEMO_SCRIPT.md`: planned 2 minute 50 second walkthrough.
+- `docs/EVALUATION.md`: evaluation protocol and label package notes.
 - `BUILDER_LOG.md`: implementation decisions and verified observations.
 
 ## Commands
@@ -136,6 +146,7 @@ Update `README.md` with the real video URL, setup verification, evaluation resul
 .\.venv\Scripts\Activate.ps1
 python -m pytest -q
 ruff check .
+python scripts/validate_evaluation_labels.py
 streamlit run app.py
 ```
 

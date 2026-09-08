@@ -11,3 +11,4 @@ outputs/
 data/documents/
 data/starter-datasets/
 .pytest_cache/
+.ruff_cache/

@@ -84,9 +84,29 @@ class Store:
         bbox = json.loads(row["bbox"]) if row["bbox"] else None
         return Evidence(id=row["id"], document_id=row["document_id"], page_index=row["page_index"], printed_page=row["printed_page"], text=row["text"], heading=row["heading"], bbox=tuple(bbox) if bbox else None)
 
-    def facts(self, query: str = "") -> list[Fact]:
-        rows = self.connection.execute("SELECT * FROM facts WHERE subject LIKE ? OR predicate LIKE ? OR original_text LIKE ? ORDER BY rowid DESC", tuple([f"%{query}%"] * 3))
-        return [Fact(id=r["id"], document_id=r["document_id"], evidence_id=r["evidence_id"], subject=r["subject"], predicate=r["predicate"], original_text=r["original_text"], value_text=r["value_text"], value_number=r["value_number"], unit=r["unit"], period=r["period"], scope=r["scope"], status=r["status"], attributes=json.loads(r["attributes"])) for r in rows]
+    def facts(self, query: str = "", limit: int | None = None) -> list[Fact]:
+        sql = "SELECT * FROM facts WHERE subject LIKE ? OR predicate LIKE ? OR original_text LIKE ? ORDER BY rowid DESC"
+        params: list[object] = [f"%{query}%"] * 3
+        if limit is not None:
+            sql += " LIMIT ?"
+            params.append(limit)
+        rows = self.connection.execute(sql, tuple(params))
+        return [self._fact(row) for row in rows]
+
+    def facts_by_ids(self, fact_ids: list[str]) -> list[Fact]:
+        if not fact_ids:
+            return []
+        unique_ids = list(dict.fromkeys(fact_ids))
+        placeholders = ",".join("?" for _ in unique_ids)
+        rows = self.connection.execute(f"SELECT * FROM facts WHERE id IN ({placeholders})", tuple(unique_ids))
+        return [self._fact(row) for row in rows]
+
+    def fact_count(self, query: str = "") -> int:
+        row = self.connection.execute(
+            "SELECT COUNT(*) AS count FROM facts WHERE subject LIKE ? OR predicate LIKE ? OR original_text LIKE ?",
+            tuple([f"%{query}%"] * 3),
+        ).fetchone()
+        return int(row["count"])
 
     def relationships(self) -> list[Relationship]:
         return [Relationship(id=r["id"], left_fact_id=r["left_fact_id"], right_fact_id=r["right_fact_id"], kind=r["kind"], confidence=r["confidence"], explanation=r["explanation"], created_at=r["created_at"]) for r in self.connection.execute("SELECT * FROM relationships ORDER BY confidence DESC")]
@@ -94,3 +114,21 @@ class Store:
     @staticmethod
     def _document(row: sqlite3.Row) -> Document:
         return Document(id=row["id"], filename=row["filename"], sha256=row["sha256"], page_count=row["page_count"], status=row["status"], warnings=json.loads(row["warnings"]), created_at=row["created_at"])
+
+    @staticmethod
+    def _fact(row: sqlite3.Row) -> Fact:
+        return Fact(
+            id=row["id"],
+            document_id=row["document_id"],
+            evidence_id=row["evidence_id"],
+            subject=row["subject"],
+            predicate=row["predicate"],
+            original_text=row["original_text"],
+            value_text=row["value_text"],
+            value_number=row["value_number"],
+            unit=row["unit"],
+            period=row["period"],
+            scope=row["scope"],
+            status=row["status"],
+            attributes=json.loads(row["attributes"]),
+        )

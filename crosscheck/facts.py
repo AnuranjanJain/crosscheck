@@ -47,7 +47,40 @@ def extract_facts(evidence: Evidence) -> list[Fact]:
                 continue
             value, unit, currency = _number(match, inherited_unit, inherited_currency)
             fact_subject = subject[-100:] if subject else (evidence.heading or "document claim")
-            scope = next((label for label in ("consolidated", "standalone", "estimate", "estimated", "projection", "actual") if label in sentence.lower()), None)
+            lowered = sentence.lower()
+            scope = next((label for label in ("consolidated", "standalone") if label in lowered), None)
+            estimate_status = next(
+                (
+                    label
+                    for label, aliases in (
+                        ("estimate", ("estimate", "estimated")),
+                        ("projection", ("projection", "projected")),
+                        ("actual", ("actual",)),
+                    )
+                    for alias in aliases
+                    if alias in lowered
+                ),
+                None,
+            )
             period = periods[index] if len(periods) == len(matches) else (periods[0] if periods else None)
-            facts.append(Fact(id=uuid4().hex, document_id=evidence.document_id, evidence_id=evidence.id, subject=fact_subject[:160], predicate=fact_subject.lower()[:120], original_text=sentence[:1000], value_text=match.group(0), value_number=value, unit=unit, period=period, scope=scope, attributes={"currency": currency, "source_page_index": evidence.page_index}))
+            facts.append(
+                Fact(
+                    id=uuid4().hex,
+                    document_id=evidence.document_id,
+                    evidence_id=evidence.id,
+                    subject=fact_subject[:160],
+                    predicate=fact_subject.lower()[:120],
+                    original_text=sentence[:1000],
+                    value_text=match.group(0),
+                    value_number=value,
+                    unit=unit,
+                    period=period,
+                    scope=scope,
+                    attributes={
+                        "currency": currency,
+                        "source_page_index": evidence.page_index,
+                        "estimate_status": estimate_status,
+                    },
+                )
+            )
     return facts

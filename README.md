@@ -34,7 +34,7 @@ python scripts/reconcile.py outputs\evaluation.db
 
 ## Video Demo
 
-Add the final public demo link here after recording a video no longer than 3 minutes. The walkthrough should show upload, processing, corroboration, a genuine or likely contradiction, contextual reconciliation, and one extraction failure with its handling.
+Add the final public demo link here after recording a video no longer than 3 minutes. The current walkthrough shows upload/processing status, grounded fact search, contextual reconciliation with dual evidence, and one extraction failure with its handling. Do not claim corroboration or likely-contradiction demos until those cases are manually verified in the live Compare view.
 
 ## Approach
 
@@ -44,7 +44,7 @@ The deterministic baseline is the reliable path for the assignment. Install `req
 
 ## Limitations and Next Steps
 
-The first release does not OCR image-only pages, reconstruct complex multi-page tables, or promise perfect semantic extraction. The baseline parser is intentionally conservative and may miss facts in unusual prose. A production follow-up would add OCR, table structure recovery, embedding retrieval, model calibration, and a held-out evaluation harness.
+The first release does not OCR image-only pages, reconstruct complex multi-page tables, or promise perfect semantic extraction. The baseline parser is intentionally conservative and may miss facts in unusual prose. Reviewed development and held-out labels now live under `evaluation/labels/` with a validator at `scripts/validate_evaluation_labels.py`. A production follow-up would add OCR, table structure recovery, embedding retrieval, model calibration, and scoring against those held-out labels.
 
 ## Additional Notes
 
