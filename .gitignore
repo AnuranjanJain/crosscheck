@@ -19,3 +19,6 @@ data/starter-datasets/
 *.db-shm
 .env
 .env.*
+*.log
+.gemini/
+.agents/
