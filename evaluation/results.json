@@ -1,0 +1,1283 @@
+{
+  "note": "Actual pipeline outputs. Acceptance matches are not corpus accuracy. Unmatched cases remain visible.",
+  "documents": [
+    {
+      "id": "c2c5f009874d44749a7a14aafce30f0c",
+      "filename": "sec-satyam-complaint-2011.pdf",
+      "sha256": "d0b597b95398b32a2c57b71923dd0a313219b688793955fd5a00276e978581f5",
+      "page_count": 16,
+      "status": "ready",
+      "warnings": [],
+      "created_at": "2026-09-08T19:04:45.164438Z"
+    },
+    {
+      "id": "f15c29b299f6414cb604337aeca348e8",
+      "filename": "03-imf-india-2025-article-iv-excerpt.pdf",
+      "sha256": "f6d3cfecafd9548920349b29b1137d645c20073434d0ac66485ead9738a0ea4d",
+      "page_count": 95,
+      "status": "completed_with_issues",
+      "warnings": [
+        "Page 1 has no extractable text; OCR is not enabled."
+      ],
+      "created_at": "2026-09-08T19:04:40.514443Z"
+    },
+    {
+      "id": "e6f83401c8af4b8caaf6aca7e1212f9c",
+      "filename": "02-rbi-annual-report-2024-25-excerpt.pdf",
+      "sha256": "73209a2caa2f5671f2feae065d01602302daaaac9e8230c9c471d99243fd079e",
+      "page_count": 100,
+      "status": "ready",
+      "warnings": [],
+      "created_at": "2026-09-08T19:04:22.565636Z"
+    },
+    {
+      "id": "08b0838504e94c25888a740950cd4be7",
+      "filename": "01-india-economic-survey-2024-25-excerpt.pdf",
+      "sha256": "86f2e79a3b7b4a3698907897297b9e17fe06d39c074d52e68303066d18a2cf71",
+      "page_count": 89,
+      "status": "ready",
+      "warnings": [],
+      "created_at": "2026-09-08T19:04:08.844601Z"
+    },
+    {
+      "id": "480bff77826c4e44b6386612d38d2265",
+      "filename": "03-delhivery-q4-fy24-earnings-presentation.pdf",
+      "sha256": "5ca307085c96c1fcbfd2d99a7ad40dcbd8958079b3833063520e4e84fdded2a8",
+      "page_count": 27,
+      "status": "ready",
+      "warnings": [],
+      "created_at": "2026-09-08T19:03:59.216303Z"
+    },
+    {
+      "id": "b371f456f3b64dcbbfc4ad9d7fce79b2",
+      "filename": "02-delhivery-annual-report-fy24-excerpt.pdf",
+      "sha256": "de6d79adc0667d66f5415fa4fcec4b485a19073744adce44dfca3e34e529fa7a",
+      "page_count": 100,
+      "status": "ready",
+      "warnings": [],
+      "created_at": "2026-09-08T19:03:52.817621Z"
+    },
+    {
+      "id": "9dc9bf06d89846ecbc1a247c8b10d331",
+      "filename": "01-delhivery-prospectus-2022-excerpt.pdf",
+      "sha256": "0d7e71e1766ef33063e52a2140936fbe400c2950e58e93489d031be0b19d8ce7",
+      "page_count": 100,
+      "status": "ready",
+      "warnings": [],
+      "created_at": "2026-09-08T19:03:27.996380Z"
+    }
+  ],
+  "processing_configuration": {
+    "d0b597b95398b32a2c57b71923dd0a313219b688793955fd5a00276e978581f5": "{\"extractor\": \"baseline-2\", \"model\": null}",
+    "f6d3cfecafd9548920349b29b1137d645c20073434d0ac66485ead9738a0ea4d": "{\"extractor\": \"baseline-2\", \"model\": null}",
+    "73209a2caa2f5671f2feae065d01602302daaaac9e8230c9c471d99243fd079e": "{\"extractor\": \"baseline-2\", \"model\": null}",
+    "86f2e79a3b7b4a3698907897297b9e17fe06d39c074d52e68303066d18a2cf71": "{\"extractor\": \"baseline-2\", \"model\": null}",
+    "5ca307085c96c1fcbfd2d99a7ad40dcbd8958079b3833063520e4e84fdded2a8": "{\"extractor\": \"baseline-2\", \"model\": null}",
+    "de6d79adc0667d66f5415fa4fcec4b485a19073744adce44dfca3e34e529fa7a": "{\"extractor\": \"baseline-2\", \"model\": null}",
+    "0d7e71e1766ef33063e52a2140936fbe400c2950e58e93489d031be0b19d8ce7": "{\"extractor\": \"baseline-2\", \"model\": null}"
+  },
+  "facts": 27684,
+  "relationship_counts": {
+    "corroboration": 16,
+    "contextual_reconciliation": 208,
+    "likely_contradiction": 34
+  },
+  "cases": [
+    {
+      "id": "delhivery-ebitda-corroboration",
+      "expected_label": "corroboration",
+      "demonstrated": true,
+      "relationship": {
+        "id": "36db5c5ad2034f318684c2a8a2a398d5",
+        "left_fact_id": "006c551b3cd24dd9a08899b47a6de0b6",
+        "right_fact_id": "4a443f606f0c417ab1b7d4cd243cbbb6",
+        "kind": "corroboration",
+        "confidence": 0.98,
+        "explanation": "The claims identify the same metric, period, and unit. The sources' stated precision produces overlapping rounding intervals.",
+        "created_at": "2026-09-08T19:06:22.402307Z"
+      },
+      "facts": [
+        {
+          "id": "006c551b3cd24dd9a08899b47a6de0b6",
+          "document_id": "480bff77826c4e44b6386612d38d2265",
+          "evidence_id": "283afeea81694dd79c29034d7c15f760",
+          "subject": "EBITDA",
+          "predicate": "ebitda",
+          "original_text": "127",
+          "value_text": "127",
+          "value_number": 1270.0,
+          "unit": "million",
+          "period": "FY24",
+          "scope": null,
+          "status": "grounded",
+          "attributes": {
+            "extractor": "period_table",
+            "metric_key": "ebitda",
+            "table_index": 0,
+            "column_header": "FY24",
+            "currency": "\u20b9",
+            "source_precision_increment": 10.0
+          }
+        },
+        {
+          "id": "4a443f606f0c417ab1b7d4cd243cbbb6",
+          "document_id": "b371f456f3b64dcbbfc4ad9d7fce79b2",
+          "evidence_id": "0dd8a344a35c41c38fffc43404d7e96e",
+          "subject": "EBITDA",
+          "predicate": "ebitda",
+          "original_text": "1,266.41",
+          "value_text": "1,266.41",
+          "value_number": 1266.41,
+          "unit": "million",
+          "period": "FY2024",
+          "scope": null,
+          "status": "grounded",
+          "attributes": {
+            "extractor": "period_table",
+            "metric_key": "ebitda",
+            "table_index": 1,
+            "column_header": "March 31, 2024",
+            "currency": "\u20b9",
+            "source_precision_increment": 0.01
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "id": "283afeea81694dd79c29034d7c15f760",
+          "document_id": "480bff77826c4e44b6386612d38d2265",
+          "page_index": 16,
+          "printed_page": "16",
+          "text": "Quarterly and full year financial performance\n\u20b9 Cr Q4 FY23 Q3 FY24 Q4 FY24 QoQ% YoY% FY23 FY24 YoY%\nIncome\nRevenue for services (A) 1,860 2,194 2,076 (5.4%) 11.6% 7,224 8,142 12.7%\nRevenue from traded goods (B) 0 - - - - 2 - -\nRevenue from customers (A+B) 1,860 2,194 2,076 (5.4%) 11.6% 7,225 8,142 12.7%\nOther income 75 131 119 (8.8%) 60.0% 305 453 48.4%\nTotal income 1,934 2,325 2,195 (5.6%) 13.5% 7,530 8,594 14.1%\nExpense\nTotal freight, handling and servicing cost 1,372 1,572 1,519 (3.4%) 10.7% 5,669 5,971 5.3%\nEmployee benefit expense\nEmployee benefit expense excl. share based payments 284 306 308 0.8% 8.4% 1,111 1,211 9.0%\nEmployee benefit expense: share based payments 73 54 49 (8.9%) (32.8%) 289 226 (21.8%)\nOther operating expense 117 154 154 0.0% 31.0% 606 607 0.3%\nFinance costs 19 22 27 22.3% 43.4% 89 89 (0.3%)\nDepreciation and amortisation expense 242 183 200 9.7% (17.3%) 831 722 (13.2%)\nTotal expenses 2,108 2,290 2,257 (1.4%) 7.1% 8,597 8,825 2.7%\nShare of profit / (loss) of associates (net) 1 (4) 6 14 9 (35.9%)\nProfit / (Loss) before exceptional items and tax (173) 31 (56) (1,053) (222)\nExceptional items - (8) (15) - (22)\nTax expense (14) 12 (2) (45) 5\nProfit / (Loss) after tax (159) 12 (69) (1,008) (249)\nEBITDA 13 109 46 (58.0%) 242.5% (452) 127\nEBITDA margin 0.7% 5.0% 2.2% (277 Bps) 149 Bps (6.3%) 1.6% 781 Bps\n16\nNote: Due to rounding off, totals may not correspond with the sum of individual figures",
+          "heading": "Quarterly and full year financial performance",
+          "bbox": null,
+          "tables": [
+            {
+              "bbox": [
+                50.408,
+                80.8006923076923,
+                921.231846153846,
+                525.701
+              ],
+              "rows": [
+                [
+                  "\u20b9 Cr",
+                  "Q4 FY23",
+                  "Q3 FY24",
+                  "Q4 FY24",
+                  "QoQ%",
+                  "YoY%",
+                  "",
+                  "FY23",
+                  "FY24",
+                  "YoY%"
+                ],
+                [
+                  "Income",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                [
+                  "Revenue for services (A)",
+                  "1,860",
+                  "2,194",
+                  "2,076",
+                  "(5.4%)",
+                  "11.6%",
+                  "",
+                  "7,224",
+                  "8,142",
+                  "12.7%"
+                ],
+                [
+                  "Revenue from traded goods (B)",
+                  "0",
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                  "",
+                  "2",
+                  "-",
+                  "-"
+                ],
+                [
+                  "Revenue from customers (A+B)",
+                  "1,860",
+                  "2,194",
+                  "2,076",
+                  "(5.4%)",
+                  "11.6%",
+                  "",
+                  "7,225",
+                  "8,142",
+                  "12.7%"
+                ],
+                [
+                  "Other income",
+                  "75",
+                  "131",
+                  "119",
+                  "(8.8%)",
+                  "60.0%",
+                  "",
+                  "305",
+                  "453",
+                  "48.4%"
+                ],
+                [
+                  "Total income",
+                  "1,934",
+                  "2,325",
+                  "2,195",
+                  "(5.6%)",
+                  "13.5%",
+                  "",
+                  "7,530",
+                  "8,594",
+                  "14.1%"
+                ],
+                [
+                  "Expense",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                [
+                  "Total freight, handling and servicing cost",
+                  "1,372",
+                  "1,572",
+                  "1,519",
+                  "(3.4%)",
+                  "10.7%",
+                  "",
+                  "5,669",
+                  "5,971",
+                  "5.3%"
+                ],
+                [
+                  "Employee benefit expense",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                [
+                  "Employee benefit expense excl. share based payments",
+                  "284",
+                  "306",
+                  "308",
+                  "0.8%",
+                  "8.4%",
+                  "",
+                  "1,111",
+                  "1,211",
+                  "9.0%"
+                ],
+                [
+                  "Employee benefit expense: share based payments",
+                  "73",
+                  "54",
+                  "49",
+                  "(8.9%)",
+                  "(32.8%)",
+                  "",
+                  "289",
+                  "226",
+                  "(21.8%)"
+                ],
+                [
+                  "Other operating expense",
+                  "117",
+                  "154",
+                  "154",
+                  "0.0%",
+                  "31.0%",
+                  "",
+                  "606",
+                  "607",
+                  "0.3%"
+                ],
+                [
+                  "Finance costs",
+                  "19",
+                  "22",
+                  "27",
+                  "22.3%",
+                  "43.4%",
+                  "",
+                  "89",
+                  "89",
+                  "(0.3%)"
+                ],
+                [
+                  "Depreciation and amortisation expense",
+                  "242",
+                  "183",
+                  "200",
+                  "9.7%",
+                  "(17.3%)",
+                  "",
+                  "831",
+                  "722",
+                  "(13.2%)"
+                ],
+                [
+                  "Total expenses",
+                  "2,108",
+                  "2,290",
+                  "2,257",
+                  "(1.4%)",
+                  "7.1%",
+                  "",
+                  "8,597",
+                  "8,825",
+                  "2.7%"
+                ],
+                [
+                  "Share of profit / (loss) of associates (net)",
+                  "1",
+                  "(4)",
+                  "6",
+                  "",
+                  "",
+                  "",
+                  "14",
+                  "9",
+                  "(35.9%)"
+                ],
+                [
+                  "Profit / (Loss) before exceptional items and tax",
+                  "(173)",
+                  "31",
+                  "(56)",
+                  "",
+                  "",
+                  "",
+                  "(1,053)",
+                  "(222)",
+                  ""
+                ],
+                [
+                  "Exceptional items",
+                  "-",
+                  "(8)",
+                  "(15)",
+                  "",
+                  "",
+                  "",
+                  "-",
+                  "(22)",
+                  ""
+                ],
+                [
+                  "Tax expense",
+                  "(14)",
+                  "12",
+                  "(2)",
+                  "",
+                  "",
+                  "",
+                  "(45)",
+                  "5",
+                  ""
+                ],
+                [
+                  "Profit / (Loss) after tax",
+                  "(159)",
+                  "12",
+                  "(69)",
+                  "",
+                  "",
+                  "",
+                  "(1,008)",
+                  "(249)",
+                  ""
+                ],
+                [
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                [
+                  "EBITDA",
+                  "13",
+                  "109",
+                  "46",
+                  "(58.0%)",
+                  "242.5%",
+                  "",
+                  "(452)",
+                  "127",
+                  ""
+                ],
+                [
+                  "EBITDA margin",
+                  "0.7%",
+                  "5.0%",
+                  "2.2%",
+                  "(277 Bps)",
+                  "149 Bps",
+                  "",
+                  "(6.3%)",
+                  "1.6%",
+                  "781 Bps"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "0dd8a344a35c41c38fffc43404d7e96e",
+          "document_id": "b371f456f3b64dcbbfc4ad9d7fce79b2",
+          "page_index": 35,
+          "printed_page": "71",
+          "text": "Corporate Overview Statutory Reports Financial Statements\nManagement Discussion and Analysis (Contd.)\ny Truck driver shortage: Potential drivers may find the on the sellers, thus affecting the potential growth of the Performance highlights due to an increase in express parcel volumes, PTL tonnage,\nprofession unattractive due to the lack of security and logistics industry. y Total income increased by 14.13% to \u20b985,942.34 million network expansion and inflation. Due to increased network\nsafety, harsh working conditions, irregular working hours, utilisation and our continuous cost optimisation measures,\nfor FY24 from \u20b975,302.49 million for FY23. Revenues from\nand long hours away from their families. With significant y Last-mile connectivity: The last-mile delivery segment our freight, handling and servicing costs decreased as a\ncustomers increased by 12.68% to \u20b981,415.38 million for\nimprovement in road infrastructure coupled with new of the logistics chain, encounters challenges such as percentage of revenue from contracts with customers to\nFY24 from \u20b972,253.01 million for FY23.\ntechnologies such as ADAS which ensures higher safety, manpower availability, inadequate road infrastructure, 73.34% for FY24 from 78.47% for FY23.\nthe working conditions for the drivers are improving. traffic congestion, poor address mapping and weather y Revenues from express parcel services increased by 11.52%\nrelated disruptions. These factors contribute to delays, Employee benefits expenses\nto \u20b950,765.87 million for FY24 from \u20b945,522.22 million for\ny Reverse logistics cost: India\u2019s e-commerce sector is higher costs, and lower customer satisfaction, especially\nFY23. Express parcel shipment volumes increased by Our employee benefits expenses increased by 2.62% to\ngrowing at a rapid pace driven by increased consumer for ecommerce and FMCG companies reliant on timely\n11.48% to 740 million parcels for FY24 from 663 million \u20b914,367.70 million for FY24 from \u20b914,000.34 million for FY23.\nincomes and smartphone penetration. However, one major deliveries. Improving last-mile connectivity through\nparcels for FY23. The increase was on account of increase in our employee\nchallenge in the e-commerce sector is the logistics cost. initiatives such as digital mapping technologies, alternate\nheadcount and increments paid to existing employees. Our\nCustomers may decide to return the parcels for various delivery modes, and different vehicle types would optimise y Revenues from PTL services increased by 31.20% to employee benefits expense decreased as a percentage of\nreasons. These reverse logistics result in additional delivery routes, shorten transit times and enhance service\n\u20b915,174.05 million for FY24 from \u20b911,565.38 million for revenue from contracts with customers to 17.65% for FY24\ncomplexity in the operations and put an additional cost reliability, thus improving the overall customer experience.\nFY23. PTL volumes increased by 29.82% to 1,429K tonnes from 19.38% for FY23.\nfor FY24 from 1,101K tonnes for FY23.\nConsolidated financial performance Other expenses\nAnalysis of our financial performance for the current and previous financial year is provided below: y Revenues from TL services increased by 39.56% to Other expenses include allowances for doubtful debts,\n\u20b96,087.96 million for FY24 from \u20b94,362.17 million for FY23.\n(\u20b9 in Million) travelling and conveyance, cash management service charges,\nParticulars March 31, 2024 March 31, 2023 software and technology cost, and repairs and maintenance.\ny Revenues from supply chain services decreased by 0.73% to\nRevenue from contracts with customers 81,415.38 72,253.01 Other expenses increased by 0.26% to \u20b96,073.78 million\n\u20b97,760.29 million for FY24 from \u20b97,817.47 million for FY23.\nOther income 4,526.96 3,049.48 for FY24 from \u20b96,058.19 million for FY23 due to increase in\nTotal income 85,942.34 75,302.49 operating volumes. However, other expenses, as a percentage\ny Revenues from cross-border services decreased by\nFreight, Handling and Servicing Costs 59,707.49 56,694.80 of revenue from contracts with customers, decreased to 7.46%\n48.43% to \u20b91,525.31 million for FY24 from \u20b92,957.68 million\nChange in inventory of traded goods - 15.76 for FY24 from 8.38% for FY23.\nEmployee benefits expense 14,367.70 14,000.34 for FY23.\nOther expenses 6,073.78 6,058.19 Other costs\nDepreciation and amortisation expense 7,215.50 8,311.44 y Loss for the year decreased to \u20b92,491.86 million for FY24\nDepreciation and amortisation expenses\nFinance costs 885.20 888.30 from \u20b910,077.79 million for FY23.\nOur depreciation and amortisation expenses decreased by\nProfit/(Loss) before exceptional items, share of profit of an associate and tax (2,307.33) (10,666.34)\nShare of profit/(loss) of associate (net) 86.95 135.74 Operating costs 13.19% to \u20b97,215.50 million for FY24 from \u20b98,311.44 million\nfor FY23, primarily due to a 56.57% decrease in amortisation\nExceptional items (224.10) - We continue to achieve cost efficiency in our operations\nexpense on intangible assets to \u20b91,000.31 million for FY24\nProfit/(Loss) before tax (2,444.48) (10,530.60) through process improvements, increasing scale and\nfrom \u20b92,303.43 million for FY23.\nTax expense 47.38 (452.81) continued integration of our various logistics service offerings.\nProfit/(loss) for the period/year (2,491.86) (10,077.79) Key components of our operating costs include:\nFinance cost\nEBITDA 1,266.41 (4,516.08)\nAdjusted EBITDA1 757.86 (4,038.66) Freight, handling and servicing costs Our finance cost decreased by 0.35% to \u20b9885.20 million\n1 Refer to adjusted EBITDA section below for details for FY24 from \u20b9888.30 million for FY23, primarily due to a\nOur freight, handling and servicing costs increased by 5.31% to\nreduction in availed banking facilities during FY24.\nRevenue by service lines \u20b959,707.49 million for FY24 from \u20b956,694.80 million for FY23\nWe provide a full range of logistics services, including express parcel delivery, part truckload (PTL) freight, truckload (TL)\nAdjusted EBITDA\nfreight, supply chain solutions, and cross-border express and freight services. Our service lines are reported as one combined\nsegment\u2014\u2018Logistics Services\u2019\u2014as per Ind AS 108. In evaluating our business, we consider and use adjusted EBITDA. This non-GAAP measure eliminates non-cash, non-recurring\nor non-operating items and thus acts as a measure of the recurring operating profitability of our business. Adjusted EBITDA\nParticulars March 31, 2024 % share March 31, 2023 % share\nhelps us identify underlying trends in our business economics and facilitates evaluating operating performance by eliminating\nRevenues from express parcel services 50,765.87 62.35% 45,522.22 63.00%\nnon-cash, non-recurring or non-operating items over multiple periods. This approach provides valuable information about\nRevenues from part truckload services 15,174.05 18.64% 11,565.38 16.01%\nour operating results, enhances the overall understanding of our past performance and prospects, and allows for greater\nRevenues from truckload services 6,087.96 7.48% 4,362.17 6.04%\ntransparency concerning crucial metrics which we use for financial and operational decision making. The table below\nRevenues from supply chain services 7,760.29 9.53% 7,817.47 10.82%\nsummarises our total revenues from contracts with customers, expenses and calculation of EBITDA and adjusted EBITDA-.\nRevenues from cross-border services 1,525.31 1.87% 2,957.68 4.09%\nOthers 101.90 0.13% 11.55 0.02% (\u20b9 in Million)\nRevenues from sale of traded goods - - 16.54 0.02% Particulars March 31, 2024 March 31, 2023 Remarks\nTotal revenues from customers 81,415.38 100.00% 72,253.01 100.00% Revenues from contracts with customers 81,415.38 72,253.01\nLess: Freight, Handling and Servicing Costs 59,707.49 56,694.80\nLess: Change in inventory of traded goods - 15.76\nLess: Employee benefits expense 14,367.70 14,000.34\nLess: Other expenses 6,073.78 6,058.19\n70 Delhivery Limited Annual Report 2023-24 71",
+          "heading": "Corporate Overview Statutory Reports Financial Statements",
+          "bbox": null,
+          "tables": [
+            {
+              "bbox": [
+                640.778,
+                -12.986666666666641,
+                889.5519999999999,
+                45.172000000000025
+              ],
+              "rows": [
+                [
+                  "Corporate Overview",
+                  "Statutory Reports",
+                  "Financial Statements"
+                ]
+              ]
+            },
+            {
+              "bbox": [
+                51.024,
+                341.97595,
+                550.133,
+                354.9527
+              ],
+              "rows": [
+                [
+                  "Particulars",
+                  "March 31, 2024",
+                  "March 31, 2023"
+                ]
+              ]
+            },
+            {
+              "bbox": [
+                51.024,
+                628.24915,
+                550.133,
+                641.22595
+              ],
+              "rows": [
+                [
+                  "Particulars",
+                  "March 31, 2024",
+                  "% share",
+                  "March 31, 2023",
+                  "% share"
+                ]
+              ]
+            },
+            {
+              "bbox": [
+                640.778,
+                711.1201615384616,
+                877.204,
+                723.6010461538461
+              ],
+              "rows": [
+                [
+                  "Particulars",
+                  "March 31, 2024"
+                ]
+              ]
+            },
+            {
+              "bbox": [
+                880.205,
+                711.1201615384616,
+                1135.7354842105262,
+                723.6010461538461
+              ],
+              "rows": [
+                [
+                  "March 31, 2023",
+                  "Remarks"
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "delhivery-ebitda-time-reconciliation",
+      "expected_label": "contextual_reconciliation",
+      "demonstrated": true,
+      "relationship": {
+        "id": "1bfdc5ec4878458bbda75d0a831783ad",
+        "left_fact_id": "b0abbbb8de464e688fb84e6d3132e31f",
+        "right_fact_id": "4a443f606f0c417ab1b7d4cd243cbbb6",
+        "kind": "contextual_reconciliation",
+        "confidence": 0.91,
+        "explanation": "The claims differ by period (FY23 vs FY2024), so the numerical difference is not classified as a contradiction.",
+        "created_at": "2026-09-08T19:06:22.402307Z"
+      },
+      "facts": [
+        {
+          "id": "b0abbbb8de464e688fb84e6d3132e31f",
+          "document_id": "480bff77826c4e44b6386612d38d2265",
+          "evidence_id": "283afeea81694dd79c29034d7c15f760",
+          "subject": "EBITDA",
+          "predicate": "ebitda",
+          "original_text": "(452)",
+          "value_text": "(452)",
+          "value_number": -4520.0,
+          "unit": "million",
+          "period": "FY23",
+          "scope": null,
+          "status": "grounded",
+          "attributes": {
+            "extractor": "period_table",
+            "metric_key": "ebitda",
+            "table_index": 0,
+            "column_header": "FY23",
+            "currency": "\u20b9",
+            "source_precision_increment": 10.0
+          }
+        },
+        {
+          "id": "4a443f606f0c417ab1b7d4cd243cbbb6",
+          "document_id": "b371f456f3b64dcbbfc4ad9d7fce79b2",
+          "evidence_id": "0dd8a344a35c41c38fffc43404d7e96e",
+          "subject": "EBITDA",
+          "predicate": "ebitda",
+          "original_text": "1,266.41",
+          "value_text": "1,266.41",
+          "value_number": 1266.41,
+          "unit": "million",
+          "period": "FY2024",
+          "scope": null,
+          "status": "grounded",
+          "attributes": {
+            "extractor": "period_table",
+            "metric_key": "ebitda",
+            "table_index": 1,
+            "column_header": "March 31, 2024",
+            "currency": "\u20b9",
+            "source_precision_increment": 0.01
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "id": "283afeea81694dd79c29034d7c15f760",
+          "document_id": "480bff77826c4e44b6386612d38d2265",
+          "page_index": 16,
+          "printed_page": "16",
+          "text": "Quarterly and full year financial performance\n\u20b9 Cr Q4 FY23 Q3 FY24 Q4 FY24 QoQ% YoY% FY23 FY24 YoY%\nIncome\nRevenue for services (A) 1,860 2,194 2,076 (5.4%) 11.6% 7,224 8,142 12.7%\nRevenue from traded goods (B) 0 - - - - 2 - -\nRevenue from customers (A+B) 1,860 2,194 2,076 (5.4%) 11.6% 7,225 8,142 12.7%\nOther income 75 131 119 (8.8%) 60.0% 305 453 48.4%\nTotal income 1,934 2,325 2,195 (5.6%) 13.5% 7,530 8,594 14.1%\nExpense\nTotal freight, handling and servicing cost 1,372 1,572 1,519 (3.4%) 10.7% 5,669 5,971 5.3%\nEmployee benefit expense\nEmployee benefit expense excl. share based payments 284 306 308 0.8% 8.4% 1,111 1,211 9.0%\nEmployee benefit expense: share based payments 73 54 49 (8.9%) (32.8%) 289 226 (21.8%)\nOther operating expense 117 154 154 0.0% 31.0% 606 607 0.3%\nFinance costs 19 22 27 22.3% 43.4% 89 89 (0.3%)\nDepreciation and amortisation expense 242 183 200 9.7% (17.3%) 831 722 (13.2%)\nTotal expenses 2,108 2,290 2,257 (1.4%) 7.1% 8,597 8,825 2.7%\nShare of profit / (loss) of associates (net) 1 (4) 6 14 9 (35.9%)\nProfit / (Loss) before exceptional items and tax (173) 31 (56) (1,053) (222)\nExceptional items - (8) (15) - (22)\nTax expense (14) 12 (2) (45) 5\nProfit / (Loss) after tax (159) 12 (69) (1,008) (249)\nEBITDA 13 109 46 (58.0%) 242.5% (452) 127\nEBITDA margin 0.7% 5.0% 2.2% (277 Bps) 149 Bps (6.3%) 1.6% 781 Bps\n16\nNote: Due to rounding off, totals may not correspond with the sum of individual figures",
+          "heading": "Quarterly and full year financial performance",
+          "bbox": null,
+          "tables": [
+            {
+              "bbox": [
+                50.408,
+                80.8006923076923,
+                921.231846153846,
+                525.701
+              ],
+              "rows": [
+                [
+                  "\u20b9 Cr",
+                  "Q4 FY23",
+                  "Q3 FY24",
+                  "Q4 FY24",
+                  "QoQ%",
+                  "YoY%",
+                  "",
+                  "FY23",
+                  "FY24",
+                  "YoY%"
+                ],
+                [
+                  "Income",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                [
+                  "Revenue for services (A)",
+                  "1,860",
+                  "2,194",
+                  "2,076",
+                  "(5.4%)",
+                  "11.6%",
+                  "",
+                  "7,224",
+                  "8,142",
+                  "12.7%"
+                ],
+                [
+                  "Revenue from traded goods (B)",
+                  "0",
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                  "",
+                  "2",
+                  "-",
+                  "-"
+                ],
+                [
+                  "Revenue from customers (A+B)",
+                  "1,860",
+                  "2,194",
+                  "2,076",
+                  "(5.4%)",
+                  "11.6%",
+                  "",
+                  "7,225",
+                  "8,142",
+                  "12.7%"
+                ],
+                [
+                  "Other income",
+                  "75",
+                  "131",
+                  "119",
+                  "(8.8%)",
+                  "60.0%",
+                  "",
+                  "305",
+                  "453",
+                  "48.4%"
+                ],
+                [
+                  "Total income",
+                  "1,934",
+                  "2,325",
+                  "2,195",
+                  "(5.6%)",
+                  "13.5%",
+                  "",
+                  "7,530",
+                  "8,594",
+                  "14.1%"
+                ],
+                [
+                  "Expense",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                [
+                  "Total freight, handling and servicing cost",
+                  "1,372",
+                  "1,572",
+                  "1,519",
+                  "(3.4%)",
+                  "10.7%",
+                  "",
+                  "5,669",
+                  "5,971",
+                  "5.3%"
+                ],
+                [
+                  "Employee benefit expense",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                [
+                  "Employee benefit expense excl. share based payments",
+                  "284",
+                  "306",
+                  "308",
+                  "0.8%",
+                  "8.4%",
+                  "",
+                  "1,111",
+                  "1,211",
+                  "9.0%"
+                ],
+                [
+                  "Employee benefit expense: share based payments",
+                  "73",
+                  "54",
+                  "49",
+                  "(8.9%)",
+                  "(32.8%)",
+                  "",
+                  "289",
+                  "226",
+                  "(21.8%)"
+                ],
+                [
+                  "Other operating expense",
+                  "117",
+                  "154",
+                  "154",
+                  "0.0%",
+                  "31.0%",
+                  "",
+                  "606",
+                  "607",
+                  "0.3%"
+                ],
+                [
+                  "Finance costs",
+                  "19",
+                  "22",
+                  "27",
+                  "22.3%",
+                  "43.4%",
+                  "",
+                  "89",
+                  "89",
+                  "(0.3%)"
+                ],
+                [
+                  "Depreciation and amortisation expense",
+                  "242",
+                  "183",
+                  "200",
+                  "9.7%",
+                  "(17.3%)",
+                  "",
+                  "831",
+                  "722",
+                  "(13.2%)"
+                ],
+                [
+                  "Total expenses",
+                  "2,108",
+                  "2,290",
+                  "2,257",
+                  "(1.4%)",
+                  "7.1%",
+                  "",
+                  "8,597",
+                  "8,825",
+                  "2.7%"
+                ],
+                [
+                  "Share of profit / (loss) of associates (net)",
+                  "1",
+                  "(4)",
+                  "6",
+                  "",
+                  "",
+                  "",
+                  "14",
+                  "9",
+                  "(35.9%)"
+                ],
+                [
+                  "Profit / (Loss) before exceptional items and tax",
+                  "(173)",
+                  "31",
+                  "(56)",
+                  "",
+                  "",
+                  "",
+                  "(1,053)",
+                  "(222)",
+                  ""
+                ],
+                [
+                  "Exceptional items",
+                  "-",
+                  "(8)",
+                  "(15)",
+                  "",
+                  "",
+                  "",
+                  "-",
+                  "(22)",
+                  ""
+                ],
+                [
+                  "Tax expense",
+                  "(14)",
+                  "12",
+                  "(2)",
+                  "",
+                  "",
+                  "",
+                  "(45)",
+                  "5",
+                  ""
+                ],
+                [
+                  "Profit / (Loss) after tax",
+                  "(159)",
+                  "12",
+                  "(69)",
+                  "",
+                  "",
+                  "",
+                  "(1,008)",
+                  "(249)",
+                  ""
+                ],
+                [
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                [
+                  "EBITDA",
+                  "13",
+                  "109",
+                  "46",
+                  "(58.0%)",
+                  "242.5%",
+                  "",
+                  "(452)",
+                  "127",
+                  ""
+                ],
+                [
+                  "EBITDA margin",
+                  "0.7%",
+                  "5.0%",
+                  "2.2%",
+                  "(277 Bps)",
+                  "149 Bps",
+                  "",
+                  "(6.3%)",
+                  "1.6%",
+                  "781 Bps"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "0dd8a344a35c41c38fffc43404d7e96e",
+          "document_id": "b371f456f3b64dcbbfc4ad9d7fce79b2",
+          "page_index": 35,
+          "printed_page": "71",
+          "text": "Corporate Overview Statutory Reports Financial Statements\nManagement Discussion and Analysis (Contd.)\ny Truck driver shortage: Potential drivers may find the on the sellers, thus affecting the potential growth of the Performance highlights due to an increase in express parcel volumes, PTL tonnage,\nprofession unattractive due to the lack of security and logistics industry. y Total income increased by 14.13% to \u20b985,942.34 million network expansion and inflation. Due to increased network\nsafety, harsh working conditions, irregular working hours, utilisation and our continuous cost optimisation measures,\nfor FY24 from \u20b975,302.49 million for FY23. Revenues from\nand long hours away from their families. With significant y Last-mile connectivity: The last-mile delivery segment our freight, handling and servicing costs decreased as a\ncustomers increased by 12.68% to \u20b981,415.38 million for\nimprovement in road infrastructure coupled with new of the logistics chain, encounters challenges such as percentage of revenue from contracts with customers to\nFY24 from \u20b972,253.01 million for FY23.\ntechnologies such as ADAS which ensures higher safety, manpower availability, inadequate road infrastructure, 73.34% for FY24 from 78.47% for FY23.\nthe working conditions for the drivers are improving. traffic congestion, poor address mapping and weather y Revenues from express parcel services increased by 11.52%\nrelated disruptions. These factors contribute to delays, Employee benefits expenses\nto \u20b950,765.87 million for FY24 from \u20b945,522.22 million for\ny Reverse logistics cost: India\u2019s e-commerce sector is higher costs, and lower customer satisfaction, especially\nFY23. Express parcel shipment volumes increased by Our employee benefits expenses increased by 2.62% to\ngrowing at a rapid pace driven by increased consumer for ecommerce and FMCG companies reliant on timely\n11.48% to 740 million parcels for FY24 from 663 million \u20b914,367.70 million for FY24 from \u20b914,000.34 million for FY23.\nincomes and smartphone penetration. However, one major deliveries. Improving last-mile connectivity through\nparcels for FY23. The increase was on account of increase in our employee\nchallenge in the e-commerce sector is the logistics cost. initiatives such as digital mapping technologies, alternate\nheadcount and increments paid to existing employees. Our\nCustomers may decide to return the parcels for various delivery modes, and different vehicle types would optimise y Revenues from PTL services increased by 31.20% to employee benefits expense decreased as a percentage of\nreasons. These reverse logistics result in additional delivery routes, shorten transit times and enhance service\n\u20b915,174.05 million for FY24 from \u20b911,565.38 million for revenue from contracts with customers to 17.65% for FY24\ncomplexity in the operations and put an additional cost reliability, thus improving the overall customer experience.\nFY23. PTL volumes increased by 29.82% to 1,429K tonnes from 19.38% for FY23.\nfor FY24 from 1,101K tonnes for FY23.\nConsolidated financial performance Other expenses\nAnalysis of our financial performance for the current and previous financial year is provided below: y Revenues from TL services increased by 39.56% to Other expenses include allowances for doubtful debts,\n\u20b96,087.96 million for FY24 from \u20b94,362.17 million for FY23.\n(\u20b9 in Million) travelling and conveyance, cash management service charges,\nParticulars March 31, 2024 March 31, 2023 software and technology cost, and repairs and maintenance.\ny Revenues from supply chain services decreased by 0.73% to\nRevenue from contracts with customers 81,415.38 72,253.01 Other expenses increased by 0.26% to \u20b96,073.78 million\n\u20b97,760.29 million for FY24 from \u20b97,817.47 million for FY23.\nOther income 4,526.96 3,049.48 for FY24 from \u20b96,058.19 million for FY23 due to increase in\nTotal income 85,942.34 75,302.49 operating volumes. However, other expenses, as a percentage\ny Revenues from cross-border services decreased by\nFreight, Handling and Servicing Costs 59,707.49 56,694.80 of revenue from contracts with customers, decreased to 7.46%\n48.43% to \u20b91,525.31 million for FY24 from \u20b92,957.68 million\nChange in inventory of traded goods - 15.76 for FY24 from 8.38% for FY23.\nEmployee benefits expense 14,367.70 14,000.34 for FY23.\nOther expenses 6,073.78 6,058.19 Other costs\nDepreciation and amortisation expense 7,215.50 8,311.44 y Loss for the year decreased to \u20b92,491.86 million for FY24\nDepreciation and amortisation expenses\nFinance costs 885.20 888.30 from \u20b910,077.79 million for FY23.\nOur depreciation and amortisation expenses decreased by\nProfit/(Loss) before exceptional items, share of profit of an associate and tax (2,307.33) (10,666.34)\nShare of profit/(loss) of associate (net) 86.95 135.74 Operating costs 13.19% to \u20b97,215.50 million for FY24 from \u20b98,311.44 million\nfor FY23, primarily due to a 56.57% decrease in amortisation\nExceptional items (224.10) - We continue to achieve cost efficiency in our operations\nexpense on intangible assets to \u20b91,000.31 million for FY24\nProfit/(Loss) before tax (2,444.48) (10,530.60) through process improvements, increasing scale and\nfrom \u20b92,303.43 million for FY23.\nTax expense 47.38 (452.81) continued integration of our various logistics service offerings.\nProfit/(loss) for the period/year (2,491.86) (10,077.79) Key components of our operating costs include:\nFinance cost\nEBITDA 1,266.41 (4,516.08)\nAdjusted EBITDA1 757.86 (4,038.66) Freight, handling and servicing costs Our finance cost decreased by 0.35% to \u20b9885.20 million\n1 Refer to adjusted EBITDA section below for details for FY24 from \u20b9888.30 million for FY23, primarily due to a\nOur freight, handling and servicing costs increased by 5.31% to\nreduction in availed banking facilities during FY24.\nRevenue by service lines \u20b959,707.49 million for FY24 from \u20b956,694.80 million for FY23\nWe provide a full range of logistics services, including express parcel delivery, part truckload (PTL) freight, truckload (TL)\nAdjusted EBITDA\nfreight, supply chain solutions, and cross-border express and freight services. Our service lines are reported as one combined\nsegment\u2014\u2018Logistics Services\u2019\u2014as per Ind AS 108. In evaluating our business, we consider and use adjusted EBITDA. This non-GAAP measure eliminates non-cash, non-recurring\nor non-operating items and thus acts as a measure of the recurring operating profitability of our business. Adjusted EBITDA\nParticulars March 31, 2024 % share March 31, 2023 % share\nhelps us identify underlying trends in our business economics and facilitates evaluating operating performance by eliminating\nRevenues from express parcel services 50,765.87 62.35% 45,522.22 63.00%\nnon-cash, non-recurring or non-operating items over multiple periods. This approach provides valuable information about\nRevenues from part truckload services 15,174.05 18.64% 11,565.38 16.01%\nour operating results, enhances the overall understanding of our past performance and prospects, and allows for greater\nRevenues from truckload services 6,087.96 7.48% 4,362.17 6.04%\ntransparency concerning crucial metrics which we use for financial and operational decision making. The table below\nRevenues from supply chain services 7,760.29 9.53% 7,817.47 10.82%\nsummarises our total revenues from contracts with customers, expenses and calculation of EBITDA and adjusted EBITDA-.\nRevenues from cross-border services 1,525.31 1.87% 2,957.68 4.09%\nOthers 101.90 0.13% 11.55 0.02% (\u20b9 in Million)\nRevenues from sale of traded goods - - 16.54 0.02% Particulars March 31, 2024 March 31, 2023 Remarks\nTotal revenues from customers 81,415.38 100.00% 72,253.01 100.00% Revenues from contracts with customers 81,415.38 72,253.01\nLess: Freight, Handling and Servicing Costs 59,707.49 56,694.80\nLess: Change in inventory of traded goods - 15.76\nLess: Employee benefits expense 14,367.70 14,000.34\nLess: Other expenses 6,073.78 6,058.19\n70 Delhivery Limited Annual Report 2023-24 71",
+          "heading": "Corporate Overview Statutory Reports Financial Statements",
+          "bbox": null,
+          "tables": [
+            {
+              "bbox": [
+                640.778,
+                -12.986666666666641,
+                889.5519999999999,
+                45.172000000000025
+              ],
+              "rows": [
+                [
+                  "Corporate Overview",
+                  "Statutory Reports",
+                  "Financial Statements"
+                ]
+              ]
+            },
+            {
+              "bbox": [
+                51.024,
+                341.97595,
+                550.133,
+                354.9527
+              ],
+              "rows": [
+                [
+                  "Particulars",
+                  "March 31, 2024",
+                  "March 31, 2023"
+                ]
+              ]
+            },
+            {
+              "bbox": [
+                51.024,
+                628.24915,
+                550.133,
+                641.22595
+              ],
+              "rows": [
+                [
+                  "Particulars",
+                  "March 31, 2024",
+                  "% share",
+                  "March 31, 2023",
+                  "% share"
+                ]
+              ]
+            },
+            {
+              "bbox": [
+                640.778,
+                711.1201615384616,
+                877.204,
+                723.6010461538461
+              ],
+              "rows": [
+                [
+                  "Particulars",
+                  "March 31, 2024"
+                ]
+              ]
+            },
+            {
+              "bbox": [
+                880.205,
+                711.1201615384616,
+                1135.7354842105262,
+                723.6010461538461
+              ],
+              "rows": [
+                [
+                  "March 31, 2023",
+                  "Remarks"
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "delhivery-postal-corroboration",
+      "expected_label": "corroboration",
+      "demonstrated": false
+    },
+    {
+      "id": "india-gdp-corroboration",
+      "expected_label": "corroboration",
+      "demonstrated": false
+    },
+    {
+      "id": "india-gdp-estimate-reconciliation",
+      "expected_label": "contextual_reconciliation",
+      "demonstrated": false
+    },
+    {
+      "id": "delhivery-sort-capacity-reconciliation",
+      "expected_label": "contextual_reconciliation",
+      "demonstrated": false
+    },
+    {
+      "id": "satyam-bank-balance-contradiction",
+      "expected_label": "likely_contradiction",
+      "demonstrated": true,
+      "relationship": {
+        "id": "2c9d51b1375f45bd96f94934a5c06bb9",
+        "left_fact_id": "03afec9a23c74fa7a0acc8345a561e34",
+        "right_fact_id": "67beabf5c47d4f5ca86afe65d932da01",
+        "kind": "likely_contradiction",
+        "confidence": 0.78,
+        "explanation": "The claims identify the same metric, period, and unit but report non-overlapping values. Attributed table assertions: BoB Balance PerSatyam versus Balance per (BoB) Statements. These are statements reproduced in the source; the system has not independently audited them.",
+        "created_at": "2026-09-08T19:06:22.399792Z"
+      },
+      "facts": [
+        {
+          "id": "03afec9a23c74fa7a0acc8345a561e34",
+          "document_id": "c2c5f009874d44749a7a14aafce30f0c",
+          "evidence_id": "16195727bb4b484b82b7a33faac2ac42",
+          "subject": "balance",
+          "predicate": "reported balance",
+          "original_text": "$379,612,394",
+          "value_text": "$379,612,394",
+          "value_number": 379612394.0,
+          "unit": "$",
+          "period": "2009-09-30",
+          "scope": "same table row",
+          "status": "grounded",
+          "attributes": {
+            "extractor": "attributed_table",
+            "attribution": "BoB Balance PerSatyam",
+            "table_group": "16195727bb4b484b82b7a33faac2ac42:0:7",
+            "table_index": 0,
+            "row_index": 7,
+            "column_index": 2,
+            "metric_key": "16195727bb4b484b82b7a33faac2ac42:0:7",
+            "source_precision_increment": 1,
+            "estimate_status": "reported assertion"
+          }
+        },
+        {
+          "id": "67beabf5c47d4f5ca86afe65d932da01",
+          "document_id": "c2c5f009874d44749a7a14aafce30f0c",
+          "evidence_id": "16195727bb4b484b82b7a33faac2ac42",
+          "subject": "balance",
+          "predicate": "reported balance",
+          "original_text": "$10,836,569",
+          "value_text": "$10,836,569",
+          "value_number": 10836569.0,
+          "unit": "$",
+          "period": "2009-09-30",
+          "scope": "same table row",
+          "status": "grounded",
+          "attributes": {
+            "extractor": "attributed_table",
+            "attribution": "Balance per (BoB) Statements",
+            "table_group": "16195727bb4b484b82b7a33faac2ac42:0:7",
+            "table_index": 0,
+            "row_index": 7,
+            "column_index": 1,
+            "metric_key": "16195727bb4b484b82b7a33faac2ac42:0:7",
+            "source_precision_increment": 1,
+            "estimate_status": "reported assertion"
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "id": "16195727bb4b484b82b7a33faac2ac42",
+          "document_id": "c2c5f009874d44749a7a14aafce30f0c",
+          "page_index": 10,
+          "printed_page": "11",
+          "text": "2009.\n27. To support the false revenue and income that Satyam was reporting in the\ncompany's financial statements, Satyam's then-senior management knowingly and\nintentionally prepared materially false bank statements, from fiscal year 2003 through\nSeptember of2008, reflecting materially false cash deposits in the company's bank\naccounts at, among other places, the Bank ofBaroda (BOB) which were recorded within\nthe cash and cash equivalent balances in the publicly filed financial statements. The chart\nbelow illustrates the actual balances in Satyam's BOB account compared to the balances\nthat Satyam's then-senior management knowingly and intentionally reported in the\ncompany's publicly filed financial statements:\nFiscal Balance per BoB Balance BoB Balance Reported\nYear (BoB) PerSatyam Overstatement Cash & Cash\nEnd Statements (Fraudulent) Equivalent\u00b7\nBalance per\nSEC Filings\n3/3I/04 $3,652,232 $64,287,652 $60,635,420 $86,730,000\n3/3I/05 $10,268,858 $82,953;598 $72,684,740 $129,800,000\n3/3I/06 $6,288,103 $218,192,913 $211,904,811 $292,800,000\n3/3I/07 $11,452,514 $79,389,673 $67,937,159 $152,200,000\n3/3I/08 $10,972,784 $214,506,068 $203,533,283 $290,500,000\n9/30/09 $10,836,569 $379,612,394 $368,775,824 $433,400,000\nTo make it appear that the company was investing its false income during the time period\nofthe fraud, Satyam's then-senior management knowingly, intentionally, and materially\nfalsified the company's publicly filed financial statements with regard to the balance and\ninterest offixed deposit receipts in accounts held at HSBC, PNB Paribas, HDFC,\nCitibank, and ICICI. Satyam's materially overstated balances and interest income are\ndetailed in the chart below:\n11",
+          "heading": "company's financial statements, Satyam's then-senior management knowingly and",
+          "bbox": null,
+          "tables": [
+            {
+              "bbox": [
+                114.2400055,
+                350.39999629999994,
+                427.6799927,
+                491.52000669999995
+              ],
+              "rows": [
+                [
+                  "Fiscal\nYear\nEnd",
+                  "Balance per\n(BoB)\nStatements",
+                  "BoB Balance\nPerSatyam",
+                  "BoB Balance\nOverstatement\n(Fraudulent)",
+                  "Reported\nCash & Cash\nEquivalent\u00b7\nBalance per\nSEC Filings"
+                ],
+                [
+                  "",
+                  "",
+                  "",
+                  "",
+                  null
+                ],
+                [
+                  "3/3I/04",
+                  "$3,652,232",
+                  "$64,287,652",
+                  "$60,635,420",
+                  "$86,730,000"
+                ],
+                [
+                  "3/3I/05",
+                  "$10,268,858",
+                  "$82,953;598",
+                  "$72,684,740",
+                  "$129,800,000"
+                ],
+                [
+                  "3/3I/06",
+                  "$6,288,103",
+                  "$218,192,913",
+                  "$211,904,811",
+                  "$292,800,000"
+                ],
+                [
+                  "3/3I/07",
+                  "$11,452,514",
+                  "$79,389,673",
+                  "$67,937,159",
+                  "$152,200,000"
+                ],
+                [
+                  "3/3I/08",
+                  "$10,972,784",
+                  "$214,506,068",
+                  "$203,533,283",
+                  "$290,500,000"
+                ],
+                [
+                  "9/30/09",
+                  "$10,836,569",
+                  "$379,612,394",
+                  "$368,775,824",
+                  "$433,400,000"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "16195727bb4b484b82b7a33faac2ac42",
+          "document_id": "c2c5f009874d44749a7a14aafce30f0c",
+          "page_index": 10,
+          "printed_page": "11",
+          "text": "2009.\n27. To support the false revenue and income that Satyam was reporting in the\ncompany's financial statements, Satyam's then-senior management knowingly and\nintentionally prepared materially false bank statements, from fiscal year 2003 through\nSeptember of2008, reflecting materially false cash deposits in the company's bank\naccounts at, among other places, the Bank ofBaroda (BOB) which were recorded within\nthe cash and cash equivalent balances in the publicly filed financial statements. The chart\nbelow illustrates the actual balances in Satyam's BOB account compared to the balances\nthat Satyam's then-senior management knowingly and intentionally reported in the\ncompany's publicly filed financial statements:\nFiscal Balance per BoB Balance BoB Balance Reported\nYear (BoB) PerSatyam Overstatement Cash & Cash\nEnd Statements (Fraudulent) Equivalent\u00b7\nBalance per\nSEC Filings\n3/3I/04 $3,652,232 $64,287,652 $60,635,420 $86,730,000\n3/3I/05 $10,268,858 $82,953;598 $72,684,740 $129,800,000\n3/3I/06 $6,288,103 $218,192,913 $211,904,811 $292,800,000\n3/3I/07 $11,452,514 $79,389,673 $67,937,159 $152,200,000\n3/3I/08 $10,972,784 $214,506,068 $203,533,283 $290,500,000\n9/30/09 $10,836,569 $379,612,394 $368,775,824 $433,400,000\nTo make it appear that the company was investing its false income during the time period\nofthe fraud, Satyam's then-senior management knowingly, intentionally, and materially\nfalsified the company's publicly filed financial statements with regard to the balance and\ninterest offixed deposit receipts in accounts held at HSBC, PNB Paribas, HDFC,\nCitibank, and ICICI. Satyam's materially overstated balances and interest income are\ndetailed in the chart below:\n11",
+          "heading": "company's financial statements, Satyam's then-senior management knowingly and",
+          "bbox": null,
+          "tables": [
+            {
+              "bbox": [
+                114.2400055,
+                350.39999629999994,
+                427.6799927,
+                491.52000669999995
+              ],
+              "rows": [
+                [
+                  "Fiscal\nYear\nEnd",
+                  "Balance per\n(BoB)\nStatements",
+                  "BoB Balance\nPerSatyam",
+                  "BoB Balance\nOverstatement\n(Fraudulent)",
+                  "Reported\nCash & Cash\nEquivalent\u00b7\nBalance per\nSEC Filings"
+                ],
+                [
+                  "",
+                  "",
+                  "",
+                  "",
+                  null
+                ],
+                [
+                  "3/3I/04",
+                  "$3,652,232",
+                  "$64,287,652",
+                  "$60,635,420",
+                  "$86,730,000"
+                ],
+                [
+                  "3/3I/05",
+                  "$10,268,858",
+                  "$82,953;598",
+                  "$72,684,740",
+                  "$129,800,000"
+                ],
+                [
+                  "3/3I/06",
+                  "$6,288,103",
+                  "$218,192,913",
+                  "$211,904,811",
+                  "$292,800,000"
+                ],
+                [
+                  "3/3I/07",
+                  "$11,452,514",
+                  "$79,389,673",
+                  "$67,937,159",
+                  "$152,200,000"
+                ],
+                [
+                  "3/3I/08",
+                  "$10,972,784",
+                  "$214,506,068",
+                  "$203,533,283",
+                  "$290,500,000"
+                ],
+                [
+                  "9/30/09",
+                  "$10,836,569",
+                  "$379,612,394",
+                  "$368,775,824",
+                  "$433,400,000"
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "imf-unextractable-page",
+      "expected_label": "extraction_failure",
+      "demonstrated": true
+    }
+  ],
+  "regression_samples": {
+    "delhivery.development.v1.json": {
+      "labeled_facts": 20,
+      "value_period_unit_matches": 6,
+      "relationship_targets": 8,
+      "classified": 0,
+      "correct_classifications": 0,
+      "unresolved_or_ambiguous": 8
+    },
+    "delhivery.held_out.v1.json": {
+      "labeled_facts": 20,
+      "value_period_unit_matches": 4,
+      "relationship_targets": 8,
+      "classified": 0,
+      "correct_classifications": 0,
+      "unresolved_or_ambiguous": 8
+    },
+    "india_macroeconomy.development.v1.json": {
+      "labeled_facts": 20,
+      "value_period_unit_matches": 4,
+      "relationship_targets": 8,
+      "classified": 0,
+      "correct_classifications": 0,
+      "unresolved_or_ambiguous": 8
+    },
+    "india_macroeconomy.held_out.v1.json": {
+      "labeled_facts": 20,
+      "value_period_unit_matches": 2,
+      "relationship_targets": 8,
+      "classified": 0,
+      "correct_classifications": 0,
+      "unresolved_or_ambiguous": 8
+    }
+  },
+  "measurement_limits": "Value/period/unit coverage is not semantic precision. Samples overlap and were exposed during development. Missing discovery is counted separately from a classified error."
+}

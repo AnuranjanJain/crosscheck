@@ -1,5 +1,25 @@
 # Evaluation protocol
 
+## Submission measurement: 2026-09-09
+
+`evaluation/results.json` contains actual stored case outputs, evidence records, document hashes and extraction configuration. Regenerate with `python scripts/submission_check.py`. The acceptance manifest is never read by extraction or comparison.
+
+Four required case types resolve: Delhivery EBITDA corroboration (annual PDF page 36 versus earnings page 17), EBITDA time reconciliation (same pages, FY24 versus FY23), an SEC-attributed bank balance contradiction (additional public PDF page 11), and IMF empty text (PDF page 1). PDF page numbers here are one-based; records retain zero-based indexes. The SEC page was rendered and visually checked; its last table row prints 9/30/09. The complaint's assertions are attributed, not independently audited by this app.
+
+| Dataset | Text coverage | Processing seconds | Development value/period/unit matches | Other regression split matches |
+|---|---:|---:|---:|---:|
+| Delhivery | 227/227 pages | 48.972 | 6/20 | 4/20 |
+| India macroeconomy | 283/284 pages | 42.722 | 4/20 | 2/20 |
+| Additional SEC complaint | 16/16 pages | 2.649 | Not labeled | Not labeled |
+
+Times are observed per-document run-log totals, including comparison against the knowledge stored at that step. They are not isolated scalability benchmarks. Each of the four existing label files has 8 relationship targets; none resolved to a single stored classification under strict value/period/unit matching. Report these 32 unresolved targets as missed discovery, not 100% accuracy on an empty denominator. Overall semantic precision is unmeasured. Four chosen acceptance examples do not establish corpus accuracy.
+
+The earlier held-out label files share 7 Delhivery and 14 India passages with development. They are exposed regression samples, not independent held-out evaluation. Preserve their filenames for compatibility, but do not describe their scores as unseen performance.
+
+On one actual table-adjacent excerpt, the optional 1.5b coder model returned 2 accepted quotations and 3 rejected quotations in 15.68 seconds. The 7b model timed out after 60.03 seconds. Baseline extraction remains the reproducible demo default. Local AI is optional and its interpretation accuracy has not been measured.
+
+Remaining limitations: heuristic entity identity, incomplete multi-column reconstruction, conservative unreadable-date rejection, weak macroeconomic coverage, and unmeasured semantic precision. The fixed examples show the requested behaviors; they do not remove these limits.
+
 Evaluate Delhivery and India macroeconomy separately and report the same measures for each: extracted-fact grounding accuracy, relationship classification accuracy, abstention count, page coverage, and elapsed processing time.
 
 Maintain two manually reviewed sets of at least 20 facts and 8 relationships per dataset. Use one set while improving extraction and keep the second hidden until final evaluation. Record each expected relationship, source PDF, PDF page index, exact passage, label, and rationale.

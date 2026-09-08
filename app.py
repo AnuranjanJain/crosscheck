@@ -182,6 +182,10 @@ with tab_docs:
                 stats = store.document_stats(document.id)
                 st.caption(f"{stats['facts']:,} grounded facts · {stats['tables']:,} recovered tables · {stats['text_pages']:,}/{document.page_count:,} pages with text")
                 st.caption(f"SHA-256: {document.sha256}")
+                configuration = store.processing_config(document.id)
+                if configuration:
+                    st.caption(f"Processing configuration: {configuration}")
+                st.caption(f"Model-extracted facts: {stats['model_facts']:,}")
                 if not issues:
                     for warning in document.warnings:
                         st.warning(warning)
@@ -200,9 +204,12 @@ with tab_docs:
 with tab_facts:
     st.subheader("Grounded facts")
     query = st.text_input("Search facts", placeholder="revenue, GDP, customers")
-    total_facts = store.fact_count(query)
+    document_options = {document.id: document.filename for document in store.documents()}
+    selected_document = st.selectbox("Source document", [None] + list(document_options),
+                                    format_func=lambda identifier: document_options[identifier] if identifier else "All documents")
+    total_facts = store.fact_count(query, document_id=selected_document)
     display_limit = 200
-    facts = store.facts(query, limit=display_limit)
+    facts = store.facts(query, limit=display_limit, document_id=selected_document)
     st.caption(f"Showing {len(facts):,} of {total_facts:,} matching facts.")
     if not facts:
         st.info("No matching facts." if query else "No facts extracted yet.")

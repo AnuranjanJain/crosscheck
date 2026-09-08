@@ -163,9 +163,13 @@ class Store:
         if column not in columns:
             self.connection.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
 
-    def facts(self, query: str = "", limit: int | None = None) -> list[Fact]:
-        sql = "SELECT * FROM facts WHERE subject LIKE ? OR predicate LIKE ? OR original_text LIKE ? ORDER BY rowid DESC"
+    def facts(self, query: str = "", limit: int | None = None, document_id: str | None = None) -> list[Fact]:
+        sql = "SELECT * FROM facts WHERE (subject LIKE ? OR predicate LIKE ? OR original_text LIKE ?)"
         params: list[object] = [f"%{query}%"] * 3
+        if document_id:
+            sql += " AND document_id=?"
+            params.append(document_id)
+        sql += " ORDER BY rowid DESC"
         if limit is not None:
             sql += " LIMIT ?"
             params.append(limit)
@@ -180,10 +184,10 @@ class Store:
         rows = self.connection.execute(f"SELECT * FROM facts WHERE id IN ({placeholders})", tuple(unique_ids))
         return [self._fact(row) for row in rows]
 
-    def fact_count(self, query: str = "") -> int:
+    def fact_count(self, query: str = "", document_id: str | None = None) -> int:
         row = self.connection.execute(
-            "SELECT COUNT(*) AS count FROM facts WHERE subject LIKE ? OR predicate LIKE ? OR original_text LIKE ?",
-            tuple([f"%{query}%"] * 3),
+            "SELECT COUNT(*) AS count FROM facts WHERE (subject LIKE ? OR predicate LIKE ? OR original_text LIKE ?) AND (? IS NULL OR document_id=?)",
+            tuple([f"%{query}%"] * 3 + [document_id, document_id]),
         ).fetchone()
         return int(row["count"])
 

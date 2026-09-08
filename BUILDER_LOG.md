@@ -27,3 +27,11 @@ Processing now emits typed stage/page/count/elapsed events and stores downloadab
 Logs are retained for reruns. A force-killed process can leave a nonterminal log and must be retried; automatic chunk resume and concurrent worker scheduling are not implemented. The UI bounds the visible log to 40 events, while the download contains the full run.
 
 Checkpoint commit: `feat: add reliable processing states and authentic run logs`.
+
+## Evidence interface and evaluation checkpoint
+
+Added a verified-case selector that resolves only live relationship IDs, document filtering, model/configuration provenance, and structured exports with source evidence. Four required case types resolve from actual stored outputs. Unmatched candidate examples remain false in the report rather than being hidden.
+
+The SEC complaint was processed as an additional unfamiliar public PDF. All seven PDFs cover 527 pages, 526 with extractable text; per-document run totals sum to 94.343 seconds. Strict regression matching exposes weak coverage and 32 unresolved relationship targets across the existing labels. Semantic precision is unmeasured. The user will record/upload the public video later.
+
+Checkpoint commit: `feat: complete evidence review and measured evaluation`.
