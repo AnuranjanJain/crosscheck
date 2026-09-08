@@ -1,0 +1,17 @@
+# Builder log
+
+This log records decisions and observations as they happen. It is intentionally explicit about failures; it must be updated during implementation and demo preparation rather than reconstructed afterward.
+
+| Entry | Observation | Decision | Verification |
+|---|---|---|---|
+| 2026-09-08 | Workspace was empty and had no existing application conventions. | Bootstrap a focused Python package with a Streamlit UI and SQLite store. | File structure and import checks. |
+| 2026-09-08 | Streamlit, pytest, Ollama, and sentence-transformers were unavailable in the bundled runtime. | Keep those as pinned install dependencies and make the core deterministic path independent of optional AI services. | `unittest` regression suite runs with bundled Python. |
+| 2026-09-08 | Starter PDFs contain discontinuous printed page labels and tables. | Store PDF page indexes independently and preserve full page evidence text. | Manual inspection of starter dataset manifests and extracted passages. |
+| 2026-09-08 | Revenue and GDP figures differ across periods, units, and estimate vintages. | Require period/unit checks before contradiction labels; do not present these differences as proven contradictions without evidence. | Comparison unit tests cover same-context difference and different-period reconciliation. |
+| 2026-09-08 | A runtime benchmark initially failed because SQLite cannot create a database parent directory. | Add parent-directory creation to `Store` and a regression test. | The previously failing nested database test now passes. |
+| 2026-09-08 | First parser run over-generated numeric candidates and did not normalize `Cr`. | Require a currency, unit, or multi-digit number; normalize `Cr`, `Mn`, and `Bn`; extract basic reporting scope. | `₹8,142 Cr` unit test and scope reconciliation test pass. |
+| 2026-09-08 | A 27-page Delhivery report and 95-page IMF report were processed locally. | Keep the deterministic extraction path as the baseline and cap stored comparison candidates at 200 for UI responsiveness. | 23.04 seconds, 2 documents, 1,028 facts, and 200 comparisons in `tmp/runtime-check-final.db`. |
+| 2026-09-08 | Streamlit dependency installation was requested twice but approval review timed out before completion. | Do not claim browser UI verification; retain pinned requirements and document the local run command. | Core compilation, source-page PNG rendering, and 8 unit tests pass in bundled Python. |
+| 2026-09-08 | A corrected dependency installation completed after the requirements-file repair. | Verify the running Streamlit workspace using a locally populated, ignored benchmark database. | Documents, Facts, and Compare views loaded at `http://127.0.0.1:8501` with 2 documents, 1,028 facts, and 200 relationships. |
+| 2026-09-08 | Full starter-set extraction encountered non-fatal invalid drawing-color messages from some source PDF pages. | Preserve text extraction and record rendering messages as source-document limitations instead of converting them into facts or errors. | 511 pages, 6 documents, 24,137 candidate facts in 199.21 seconds. |
+| 2026-09-08 | Initial relationship selection was quadratic and early candidates produced false contextual labels when period was missing. | Index candidate pairs by shared subject-token pairs; require explicit period, unit, or scope differences for contextual reconciliation. | Full-corpus reconciliation completes in about 2 seconds; the deterministic baseline currently yields 200 contextual reconciliations, 0 corroborations, and 0 likely contradictions. |
